@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MoodLog extends Model
 {
-    protected $fillable = ['user_id', 'mood_score', 'note'];
+    protected $fillable = ['user_id', 'mood_score', 'note', 'created_at'];
 
     public function user()
     {

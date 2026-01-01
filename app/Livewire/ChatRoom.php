@@ -19,6 +19,11 @@ class ChatRoom extends Component
         $this->activeRoom = ChatRoomModel::findOrFail($id);
     }
 
+    public $replyingTo = null; // Stores the message being replied to
+    public $showReportModal = false;
+    public $reportMessageId = null;
+    public $reportReason = '';
+
     public function sendMessage()
     {
         $this->validate(['newMessage' => 'required|string|max:1000']);
@@ -26,17 +31,58 @@ class ChatRoom extends Component
         Message::create([
             'chat_room_id' => $this->roomId,
             'user_id' => Auth::id(),
-            'content' => $this->newMessage
+            'content' => $this->newMessage,
+            'parent_id' => $this->replyingTo ? $this->replyingTo->id : null,
         ]);
 
-        $this->reset('newMessage');
+        $this->reset(['newMessage', 'replyingTo']);
         $this->dispatch('scroll-to-bottom');
+    }
+
+    public function replyTo($messageId)
+    {
+        $this->replyingTo = Message::find($messageId);
+        $this->dispatch('focus-input');
+    }
+
+    public function cancelReply()
+    {
+        $this->reset('replyingTo');
+    }
+
+    public function promptReport($messageId)
+    {
+        $this->reportMessageId = $messageId;
+        $this->showReportModal = true;
+    }
+
+    public function submitReport()
+    {
+        $this->validate([
+            'reportReason' => 'required|string|min:3|max:255',
+        ]);
+
+        if ($this->reportMessageId) {
+            \App\Models\MessageReport::create([
+                'message_id' => $this->reportMessageId,
+                'reporter_id' => Auth::id(),
+                'reason' => $this->reportReason,
+            ]);
+        }
+
+        $this->reset(['showReportModal', 'reportMessageId', 'reportReason']);
+        $this->dispatch('report-submitted'); // Optional: for toast notification
+    }
+
+    public function closeReportModal()
+    {
+        $this->reset(['showReportModal', 'reportMessageId', 'reportReason']);
     }
 
     public function getMessagesProperty()
     {
         return $this->activeRoom->messages()
-            ->with('user')
+            ->with(['user', 'parent.user'])
             ->latest()
             ->take(50)
             ->get()

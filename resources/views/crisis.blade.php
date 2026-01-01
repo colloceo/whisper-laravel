@@ -49,6 +49,29 @@
                 box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
             }
         }
+
+        /* Dark Mode Overrides for Modals */
+        [data-theme="dark"] .modal-content {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+        }
+
+        [data-theme="dark"] .modal-header .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        [data-theme="dark"] .text-muted {
+            color: #94a3b8 !important;
+        }
+
+        [data-theme="dark"] .text-dark {
+            color: #f1f5f9 !important;
+        }
+
+        [data-theme="dark"] #groundingStepNum.text-dark {
+            color: #1e293b !important;
+            /* Keep step number dark on light circle */
+        }
     </style>
 
     <div class="container py-4">
@@ -204,21 +227,17 @@
                 <div class="glass-card border-0 p-4 mb-4" style="border-radius: 1.5rem;">
                     <h6 class="fw-bold text-warm-dark mb-3">Professional Resources</h6>
                     <div class="list-group list-group-flush bg-transparent">
-                        <a href="#"
-                            class="list-group-item list-group-item-action bg-transparent border-light py-2 d-flex justify-content-between align-items-center ps-0">
-                            <span class="text-dark">Basic Needs Kenya</span>
-                            <i class="bi bi-box-arrow-up-right text-muted small"></i>
-                        </a>
-                        <a href="#"
-                            class="list-group-item list-group-item-action bg-transparent border-light py-2 d-flex justify-content-between align-items-center ps-0">
-                            <span class="text-dark">Mental Health Kenya</span>
-                            <i class="bi bi-box-arrow-up-right text-muted small"></i>
-                        </a>
-                        <a href="#"
-                            class="list-group-item list-group-item-action bg-transparent border-0 py-2 d-flex justify-content-between align-items-center ps-0">
-                            <span class="text-dark">WHO Mental Health</span>
-                            <i class="bi bi-box-arrow-up-right text-muted small"></i>
-                        </a>
+                        @php
+                            $resources = \App\Models\CrisisResource::where('is_active', true)->whereIn('type', ['website', 'organization'])->get();
+                        @endphp
+
+                        @foreach($resources as $resource)
+                            <a href="{{ $resource->url ?? '#' }}" target="_blank"
+                                class="list-group-item list-group-item-action bg-transparent border-light py-2 d-flex justify-content-between align-items-center ps-0">
+                                <span class="text-dark">{{ $resource->name }}</span>
+                                <i class="bi bi-box-arrow-up-right text-muted small"></i>
+                            </a>
+                        @endforeach
                     </div>
                 </div>
 
@@ -270,61 +289,123 @@
     </div>
 
     <script>
-        // Logic remains same (simplified for brevity in this response, but fully included in file)
-        // Breathing
-        const breathingModal = new bootstrap.Modal(document.getElementById('breathingModal'));
-        const circle = document.getElementById('breathingCircle');
-        const text = document.getElementById('breathingText');
-        const startBtn = document.getElementById('startBreathingBtn');
-        let breathingInterval;
-
-        function openBreathingModal() { breathingModal.show(); }
-
-        startBtn.addEventListener('click', () => {
-            startBtn.style.display = 'none';
-            text.innerText = 'Inhale';
-            circle.style.transform = 'scale(1.2)';
-            runBreathingCycle();
-            breathingInterval = setInterval(runBreathingCycle, 19000);
-        });
-
-        function runBreathingCycle() {
-            text.innerText = 'Inhale'; circle.style.transform = 'scale(1.3)'; circle.style.transition = 'all 4s ease-in-out';
-            setTimeout(() => {
-                text.innerText = 'Hold';
-                setTimeout(() => {
-                    text.innerText = 'Exhale'; circle.style.transform = 'scale(1)'; circle.style.transition = 'all 8s ease-in-out';
-                }, 7000);
-            }, 4000);
-        }
-        document.getElementById('breathingModal').addEventListener('hidden.bs.modal', () => {
-            clearInterval(breathingInterval); startBtn.style.display = 'inline-block'; text.innerText = 'Ready?'; circle.style.transform = 'scale(1)';
-        });
-
-        // Grounding
-        const groundingModal = new bootstrap.Modal(document.getElementById('groundingModal'));
-        const stepNum = document.getElementById('groundingStepNum');
-        const title = document.getElementById('groundingTitle');
-        const desc = document.getElementById('groundingDesc');
-        const nextBtn = document.getElementById('nextGroundingBtn');
-        const steps = [
-            { num: 5, title: 'Name 5 things you can see', desc: 'Look around and notice details.' },
-            { num: 4, title: 'Name 4 things you can touch', desc: 'Notice textures.' },
-            { num: 3, title: 'Name 3 things you can hear', desc: 'Listen for subtle sounds.' },
-            { num: 2, title: 'Name 2 things you can smell', desc: 'Or favorite smells.' },
-            { num: 1, title: 'Name 1 thing you can taste', desc: 'Focus on any taste.' }
-        ];
-        let currentStep = 0;
-
-        function openGroundingModal() { groundingModal.show(); currentStep = 0; updateGroundingUI(); }
-        function updateGroundingUI() {
-            if (currentStep < steps.length) {
-                stepNum.innerText = steps[currentStep].num; title.innerText = steps[currentStep].title; desc.innerText = steps[currentStep].desc; nextBtn.innerText = 'Next';
-                nextBtn.onclick = () => { currentStep++; updateGroundingUI(); };
+        // Wait for Bootstrap to be loaded
+        function waitForBootstrap(callback) {
+            if (window.bootstrap) {
+                callback();
             } else {
-                stepNum.innerHTML = '<i class="bi bi-check-lg"></i>'; title.innerText = 'Great job!'; desc.innerText = 'Take a moment.'; nextBtn.innerText = 'Close';
-                nextBtn.onclick = () => groundingModal.hide();
+                setTimeout(() => waitForBootstrap(callback), 100);
             }
         }
+
+        waitForBootstrap(() => {
+            // --- Guided Breathing Logic ---
+            const breathingModalEl = document.getElementById('breathingModal');
+            const breathingModal = new bootstrap.Modal(breathingModalEl);
+            const circle = document.getElementById('breathingCircle');
+            const text = document.getElementById('breathingText');
+            const startBtn = document.getElementById('startBreathingBtn');
+            let breathingInterval;
+
+            window.openBreathingModal = function () {
+                breathingModal.show();
+            }
+
+            startBtn.addEventListener('click', () => {
+                startBtn.style.display = 'none';
+                runBreathingCycle(); // Start immediately
+                // Cycle total: 4s (Inhale) + 7s (Hold) + 8s (Exhale) = 19s
+                breathingInterval = setInterval(runBreathingCycle, 19000);
+            });
+
+            function runBreathingCycle() {
+                // Inhale (4s)
+                text.innerText = 'Inhale';
+                circle.style.transition = 'all 4s ease-in-out';
+                circle.style.transform = 'scale(1.5)';
+                circle.style.backgroundColor = '#457b9d'; // Darker blue
+
+                setTimeout(() => {
+                    // Hold (7s)
+                    text.innerText = 'Hold';
+                    circle.style.transition = 'all 0.5s ease-in-out';
+                    // Subtle pulse or static
+                    circle.style.transform = 'scale(1.55)';
+
+                    setTimeout(() => {
+                        // Exhale (8s)
+                        text.innerText = 'Exhale';
+                        circle.style.transition = 'all 8s ease-out';
+                        circle.style.transform = 'scale(1)';
+                        circle.style.backgroundColor = '#A8DADC'; // Back to original
+
+                    }, 7000); // Wait 7s for Hold
+                }, 4000); // Wait 4s for Inhale
+            }
+
+            breathingModalEl.addEventListener('hidden.bs.modal', () => {
+                clearInterval(breathingInterval);
+                startBtn.style.display = 'inline-block';
+                text.innerText = 'Ready?';
+                circle.style.transform = 'scale(1)';
+                circle.style.backgroundColor = '#A8DADC';
+            });
+
+
+            // --- Grounding Logic ---
+            const groundingModalEl = document.getElementById('groundingModal');
+            const groundingModal = new bootstrap.Modal(groundingModalEl);
+            const stepNum = document.getElementById('groundingStepNum');
+            const title = document.getElementById('groundingTitle');
+            const desc = document.getElementById('groundingDesc');
+            const nextBtn = document.getElementById('nextGroundingBtn');
+
+            const steps = [
+                { num: 5, title: 'Name 5 things you can see', desc: 'Look around. Notice colors, shapes, and details you might usually miss.' },
+                { num: 4, title: 'Name 4 things you can touch', desc: 'Notice the texture of your clothes, the chair, or your own hands.' },
+                { num: 3, title: 'Name 3 things you can hear', desc: 'Listen close. Traffic, a bird, the hum of the fridge, or your breath.' },
+                { num: 2, title: 'Name 2 things you can smell', desc: 'If you can\'t smell anything right now, recall your favorite scents.' },
+                { num: 1, title: 'Name 1 thing you can taste', desc: 'A lingering taste, or just the feeling of your tongue.' }
+            ];
+            let currentStep = 0;
+
+            window.openGroundingModal = function () {
+                groundingModal.show();
+                currentStep = 0;
+                updateGroundingUI();
+            }
+
+            function updateGroundingUI() {
+                // Simple fade effect
+                const contentContainer = stepNum.parentElement.parentElement; // The .py-4 container roughly
+                contentContainer.style.opacity = '0';
+                contentContainer.style.transition = 'opacity 0.3s ease';
+
+                setTimeout(() => {
+                    if (currentStep < steps.length) {
+                        stepNum.innerText = steps[currentStep].num;
+                        stepNum.style.backgroundColor = '#FFCDB2';
+                        stepNum.innerHTML = steps[currentStep].num;
+
+                        title.innerText = steps[currentStep].title;
+                        desc.innerText = steps[currentStep].desc;
+                        nextBtn.innerText = 'Next';
+                        nextBtn.onclick = () => {
+                            currentStep++;
+                            updateGroundingUI();
+                        };
+                    } else {
+                        // Done state
+                        stepNum.innerHTML = '<i class="bi bi-check-lg"></i>';
+                        stepNum.style.backgroundColor = '#b7e4c7'; // Soft green
+                        title.innerText = 'Great job!';
+                        desc.innerText = 'Take a moment to feel the difference.';
+                        nextBtn.innerText = 'Close';
+                        nextBtn.onclick = () => groundingModal.hide();
+                    }
+                    contentContainer.style.opacity = '1';
+                }, 300);
+            }
+        });
     </script>
 @endsection

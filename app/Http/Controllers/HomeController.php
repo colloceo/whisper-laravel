@@ -15,20 +15,33 @@ class HomeController extends Controller
     {
         $user = auth()->user();
 
-        $moodLogs = $user->moodLogs()
-            ->latest()
-            ->take(7)
-            ->get()
-            ->reverse()
-            ->values();
+        // Get mood logs for the last 7 days
+        $rawMoodLogs = $user->moodLogs()
+            ->where('created_at', '>=', now()->subDays(7))
+            ->oldest()
+            ->get();
+
+        // Aggregate by date (average score per day)
+        $moodLogs = $rawMoodLogs->groupBy(function ($date) {
+            return $date->created_at->format('Y-m-d');
+        })->map(function ($dayLogs) {
+            return [
+                'date' => $dayLogs->first()->created_at, // Use first log's full timestamp for date obj
+                'mood_score' => round($dayLogs->avg('mood_score'), 1),
+                'count' => $dayLogs->count()
+            ];
+        })->values();
 
         // Get daily affirmation (Cache for 24 hours per user)
         $affirmation = Cache::remember("affirmation_{$user->id}_" . now()->format('Y-m-d'), 60 * 24, function () use ($aiService, $moodLogs) {
+            // Calculate overall average from the aggregated daily averages or raw logs
             $avgMood = $moodLogs->avg('mood_score') ?? 3;
             return $aiService->getDailyAffirmation(round($avgMood, 1));
         });
 
-        return view('home', compact('moodLogs', 'affirmation'));
+        $unreadNotificationsCount = $user->unreadNotifications->count();
+
+        return view('home', compact('moodLogs', 'affirmation', 'unreadNotificationsCount'));
     }
 
     public function storeMood(Request $request)
@@ -41,5 +54,31 @@ class HomeController extends Controller
         auth()->user()->moodLogs()->create($request->only('mood_score', 'note'));
 
         return redirect()->back()->with('status', 'Mood logged successfully!');
+    }
+
+    public function updateDailyMood(Request $request)
+    {
+        $request->validate([
+            'date' => 'required|date', // Y-m-d
+            'mood_score' => 'required|integer|min:1|max:5',
+        ]);
+
+        $user = auth()->user();
+        $date = \Carbon\Carbon::parse($request->date)->format('Y-m-d');
+
+        // Delete existing logs for this date
+        $user->moodLogs()
+            ->whereDate('created_at', $date)
+            ->delete();
+
+        // Create new log for this date (set time to 12:00 PM to be safe)
+        $user->moodLogs()->forceCreate([
+            'user_id' => $user->id,
+            'mood_score' => (int) $request->mood_score,
+            'note' => 'Manual update via graph',
+            'created_at' => \Carbon\Carbon::parse($date)->setHour(12)->setMinute(0)->setSecond(0)
+        ]);
+
+        return redirect()->back()->with('status', "Daily mood for $date updated successfully!");
     }
 }

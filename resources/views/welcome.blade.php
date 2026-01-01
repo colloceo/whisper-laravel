@@ -33,9 +33,17 @@
         }
 
         @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         /* Splash Screen */
@@ -65,9 +73,20 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.9; }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .tagline {
@@ -80,12 +99,15 @@
         }
 
         @keyframes fadeIn {
-            to { opacity: 1; }
+            to {
+                opacity: 1;
+            }
         }
 
         /* Slider Card */
         .slider-card {
-            background: rgba(255, 255, 255, 0.85); /* Slightly more opaque for readability */
+            background: rgba(255, 255, 255, 0.85);
+            /* Slightly more opaque for readability */
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.6);
@@ -96,19 +118,22 @@
             width: 90%;
             text-align: center;
             position: fixed;
-            bottom: -100%; /* Start off-screen */
+            bottom: -100%;
+            /* Start off-screen */
             left: 50%;
             transform: translateX(-50%);
             transition: bottom 0.8s cubic-bezier(0.19, 1, 0.22, 1);
             z-index: 10;
-            height: 60vh; /* Occupy significant space */
+            height: 60vh;
+            /* Occupy significant space */
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
         .slider-card.visible {
-            bottom: 30px; /* Float slightly above bottom */
+            bottom: 30px;
+            /* Float slightly above bottom */
         }
 
         .slide {
@@ -125,18 +150,30 @@
         }
 
         @keyframes slideIn {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .icon-container {
             font-size: 4rem;
             margin-bottom: 1.5rem;
         }
-        
+
         /* Icons Colors */
-        .icon-teal { color: var(--whisper-teal, #A8DADC); }
-        .icon-warm { color: var(--whisper-warm, #FFCDB2); }
+        .icon-teal {
+            color: var(--whisper-teal, #A8DADC);
+        }
+
+        .icon-warm {
+            color: var(--whisper-warm, #FFCDB2);
+        }
 
         .card-headline {
             font-family: 'Poppins', sans-serif;
@@ -194,7 +231,9 @@
             text-decoration: none;
         }
 
-        .btn-action:active { transform: scale(0.98); }
+        .btn-action:active {
+            transform: scale(0.98);
+        }
 
         .btn-primary-pill {
             background: linear-gradient(90deg, #b2cbf2, #A8DADC);
@@ -205,7 +244,7 @@
         .btn-google {
             background: #fff;
             color: #1e293b;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             margin-bottom: 0.8rem;
         }
 
@@ -233,7 +272,7 @@
 
     <!-- Slider Card -->
     <div class="slider-card" id="sliderCard">
-        
+
         <!-- Slide 1: Journaling -->
         <div class="slide active" id="slide-1">
             <div class="icon-container icon-teal">
@@ -258,14 +297,14 @@
 
         <!-- Slide 3: Auth Selection -->
         <div class="slide" id="slide-3">
-             <div class="icon-container" style="color: #CDB4DB;">
+            <div class="icon-container" style="color: #CDB4DB;">
                 <i class="bi bi-stars"></i>
             </div>
             <h2 class="card-headline">Start your journey</h2>
-            
+
             <div style="width: 100%; margin-top: 1rem;">
-                <!-- Google Button (Visual Only for now) -->
-                <a href="{{ route('register') }}" class="btn-action btn-google">
+                <!-- Google Button -->
+                <a href="{{ route('auth.google') }}" class="btn-action btn-google">
                     <i class="bi bi-google"></i> Continue with Google
                 </a>
 
@@ -276,7 +315,8 @@
 
                 <div class="mt-3">
                     <span style="color: #94a3b8; font-size: 0.9rem;">Already have an account?</span>
-                    <a href="{{ route('login') }}" style="color: #64748b; font-weight: 600; text-decoration: none; margin-left: 5px;">Log In</a>
+                    <a href="{{ route('login') }}"
+                        style="color: #64748b; font-weight: 600; text-decoration: none; margin-left: 5px;">Log In</a>
                 </div>
 
                 <p class="footer-note">By continuing, you agree to our Terms.</p>
@@ -302,7 +342,7 @@
         setTimeout(() => {
             const splash = document.getElementById('splash');
             const slider = document.getElementById('sliderCard');
-            
+
             splash.classList.add('minimized');
             slider.classList.add('visible');
         }, 2500);
@@ -324,7 +364,7 @@
                 // Transition Slides
                 document.getElementById(`slide-${currentSlide}`).classList.remove('active');
                 document.getElementById(`dot-${currentSlide}`).classList.remove('active');
-                
+
                 document.getElementById(`slide-${nextIndex}`).classList.add('active');
                 document.getElementById(`dot-${nextIndex}`).classList.add('active');
 

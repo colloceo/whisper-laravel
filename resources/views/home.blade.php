@@ -18,9 +18,12 @@
                 <!-- Notification Bell -->
                 <div class="position-relative p-2 rounded-circle glass-card" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                     <i class="bi bi-bell text-secondary"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                        <span class="visually-hidden">New alerts</span>
-                    </span>
+                    @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light">
+                            {{ $unreadNotificationsCount }}
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    @endif
                 </div>
             </div>
 
@@ -120,7 +123,6 @@
                 </div>
             </div>
 
-            <!-- 5. Section D: Weekly Insight (Chart Placeholder) -->
             <div class="glass-card border-0 mb-5">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -128,21 +130,175 @@
                         <span class="badge bg-light text-muted rounded-pill">Last 7 Days</span>
                     </div>
                     
-                    <div class="chart-container" style="position: relative; height:150px; width:100%">
-                        <canvas id="moodChart"></canvas> 
-                        <!-- Placeholder visual if JS fails or not implemented yet -->
-                        <div class="d-flex align-items-end justify-content-between h-100 w-100 position-absolute top-0 start-0 opacity-25" style="z-index: -1;">
-                            <div class="bg-primary rounded-top" style="width: 10%; height: 40%;"></div>
-                            <div class="bg-primary rounded-top" style="width: 10%; height: 60%;"></div>
-                            <div class="bg-primary rounded-top" style="width: 10%; height: 30%;"></div>
-                            <div class="bg-primary rounded-top" style="width: 10%; height: 80%;"></div>
-                            <div class="bg-primary rounded-top" style="width: 10%; height: 50%;"></div>
-                            <div class="bg-primary rounded-top" style="width: 10%; height: 70%;"></div>
-                            <div class="bg-primary rounded-top" style="width: 10%; height: 90%;"></div>
-                        </div>
+                    <div class="chart-container" style="position: relative; height:200px; width:100%">
+                        <canvas id="moodChart"></canvas>
                     </div>
                 </div>
             </div>
+
+            <!-- Edit Mood Modal -->
+            <div class="modal fade" id="editMoodModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content glass-card border-0">
+                        <div class="modal-header border-0">
+                            <h5 class="modal-title fw-bold">Edit Mood</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="{{ route('mood.update_daily') }}">
+                            @csrf
+                            <input type="hidden" name="date" id="editMoodDate">
+                            <div class="modal-body text-center">
+                                <p class="text-muted mb-4">How did you feel on <span id="editMoodDateDisplay" class="fw-bold text-dark"></span>?</p>
+                                
+                                <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
+                                    @foreach([
+                                        1 => ['icon' => 'emoji-frown', 'color' => 'text-primary', 'label' => 'Low'],
+                                        2 => ['icon' => 'emoji-dizzy', 'color' => 'text-secondary', 'label' => 'Okay'],
+                                        3 => ['icon' => 'emoji-neutral', 'color' => 'text-info', 'label' => 'Fine'],
+                                        4 => ['icon' => 'emoji-smile', 'color' => 'text-warning', 'label' => 'Good'],
+                                        5 => ['icon' => 'emoji-heart-eyes', 'color' => 'text-success', 'label' => 'Great']
+                                    ] as $score => $data)
+                                        <div>
+                                            <input type="radio" class="btn-check" name="mood_score" id="edit_mood_{{ $score }}" value="{{ $score }}" required>
+                                            <label class="btn btn-outline-light border-0 mood-icon-btn p-2" for="edit_mood_{{ $score }}">
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <i class="bi bi-{{ $data['icon'] }} fs-2 {{ $data['color'] }} mb-1"></i>
+                                                    <span class="small text-muted" style="font-size: 0.7rem;">{{ $data['label'] }}</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0 justify-content-center">
+                                <button type="submit" class="btn btn-primary rounded-pill px-4">Update Mood</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart.js -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const ctx = document.getElementById('moodChart').getContext('2d');
+                    
+                    const moodData = @json($moodLogs);
+                    
+                    const labels = moodData.map(log => {
+                        const date = new Date(log.date);
+                        return date.toLocaleDateString('en-US', { weekday: 'short' });
+                    });
+
+                    const dataPoints = moodData.map(log => log.mood_score);
+
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Mood',
+                                data: dataPoints,
+                                borderColor: '#a8dadc',
+                                backgroundColor: 'rgba(168, 218, 220, 0.2)',
+                                borderWidth: 3,
+                                tension: 0.4, // Smooth curves
+                                pointBackgroundColor: '#ffffff',
+                                pointBorderColor: '#457b9d',
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                intersect: false, // Allow clicking anywhere on the vertical slice
+                                mode: 'index',
+                            },
+                            onClick: (e) => {
+                                const canvasPosition = Chart.helpers.getRelativePosition(e, e.chart);
+                                
+                                // Substitute the appropriate scale IDs
+                                const dataX = e.chart.scales.x.getValueForPixel(canvasPosition.x);
+                                
+                                if (dataX >= 0 && dataX < moodData.length) {
+                                    const log = moodData[dataX];
+                                    const date = log.date.split('T')[0]; // Extract Y-m-d
+                                    const score = Math.round(log.mood_score);
+
+                                    // Populate Modal
+                                    document.getElementById('editMoodDate').value = date;
+                                    document.getElementById('editMoodDateDisplay').textContent = new Date(date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+                                    
+                                    // Check the radio button corresponding to the score
+                                    const radio = document.getElementById('edit_mood_' + score);
+                                    if(radio) radio.checked = true;
+
+                                    // Show Modal
+                                    const modal = new bootstrap.Modal(document.getElementById('editMoodModal'));
+                                    modal.show();
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                    titleColor: '#1d3557',
+                                    bodyColor: '#1d3557',
+                                    borderColor: '#e5e7eb',
+                                    borderWidth: 1,
+                                    padding: 10,
+                                    displayColors: false,
+                                    callbacks: {
+                                        label: function(context) {
+                                            const value = context.parsed.y;
+                                            const labels = {
+                                                1: 'Low',
+                                                2: 'Okay',
+                                                3: 'Fine',
+                                                4: 'Good',
+                                                5: 'Great'
+                                            };
+                                            return labels[value] || value;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    min: 1,
+                                    max: 5,
+                                    ticks: {
+                                        stepSize: 1,
+                                        callback: function(value) {
+                                            const labels = {
+                                                1: 'Low',
+                                                2: 'Okay',
+                                                3: 'Fine',
+                                                4: 'Good',
+                                                5: 'Great'
+                                            };
+                                            return labels[value] || '';
+                                        },
+                                        font: { family: "'Poppins', sans-serif" }
+                                    },
+                                    grid: { display: false }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: {
+                                        font: { family: "'Poppins', sans-serif" }
+                                    }
+                                }
+                            },
+
+                        }
+                    });
+                });
+            </script>
 
         </div>
     </div>

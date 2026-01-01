@@ -6,12 +6,13 @@ Whispr is a modern, secure, and compassionate communication platform designed to
 
 ## Features
 
-- **Peer Chat**: Real-time, secure messaging with peers.
-- **Crisis Support**: Immediate access to crisis intervention resources.
+- **Peer Chat**: Real-time messaging with **replies**, **reporting**, and visible sender names.
+- **Admin Dashboard**: Comprehensive management of Users, Chat Rooms, and Crisis Resources.
+- **Crisis Support**: Dynamic access to verified crisis intervention resources.
 - **Journaling**: Private, secure journaling to track thoughts and feelings.
-- **Profile Management**: customizable user profiles.
+- **Authentication**: Secure login via Email and Google OAuth.
 - **PWA Support**: Installable on mobile and desktop devices with offline capabilities.
-- **Dark Mode**: Native dark mode support for comfortable usage in low-light environments.
+- **Dark Mode**: Native dark mode support for comfortable usage.
 
 ## Tech Stack
 

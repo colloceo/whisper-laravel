@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Message extends Model
 {
-    protected $fillable = ['chat_room_id', 'user_id', 'content'];
+    protected $fillable = ['chat_room_id', 'user_id', 'content', 'parent_id'];
 
     public function user()
     {
@@ -16,5 +16,15 @@ class Message extends Model
     public function chatRoom()
     {
         return $this->belongsTo(ChatRoom::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Message::class, 'parent_id');
+    }
+
+    public function replies()
+    {
+        return $this->hasMany(Message::class, 'parent_id');
     }
 }
