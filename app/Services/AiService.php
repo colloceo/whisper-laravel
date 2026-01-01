@@ -12,7 +12,7 @@ class AiService
 
     public function __construct()
     {
-        $this->baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+        $this->baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
         $this->apiKey = env('GEMINI_API_KEY');
     }
 
@@ -34,6 +34,15 @@ class AiService
         $prompt = "You are Whispr, a compassionate mental health companion. The user will share a thought. Your goal is to validate their feelings first, then gently offer a 'cognitive reframing'—a positive or constructive perspective on their situation. Keep it short (under 3 sentences), warm, and human-like. Thought: '{$thought}'";
 
         return $this->callApi($prompt);
+    }
+
+    /**
+     * Generate a creative anonymous username.
+     */
+    public function generateUsername()
+    {
+        $prompt = "Generate a single, creative, anonymous username consisting of a positive adjective and a cute animal (e.g., 'Brave Panda', 'Calm Koala'). Do not use special characters or numbers. Output ONLY the username.";
+        return $this->callApi($prompt) ?? 'Anonymous Friend';
     }
 
     protected function callApi($content)

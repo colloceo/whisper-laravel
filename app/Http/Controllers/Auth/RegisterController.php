@@ -62,10 +62,14 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        $aiService = new \App\Services\AiService();
+        $username = $aiService->generateUsername();
+
         return User::create([
-            'name' => 'Anonymous Member', // Default name to satisfy DB constraint
+            'name' => $data['name'] ?? explode('@', $data['email'])[0], // Fallback for name if not provided
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'anonymous_username' => $username,
         ]);
     }
 }

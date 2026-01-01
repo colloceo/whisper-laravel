@@ -134,4 +134,28 @@ class AdminController extends Controller
         $user->delete();
         return back()->with('status', 'User deleted successfully.');
     }
+
+    // --- Message Reporting Management ---
+    public function reports()
+    {
+        $reports = \App\Models\MessageReport::with(['message.user', 'reporter'])->latest()->paginate(20);
+        return view('admin.reports', compact('reports'));
+    }
+
+    public function dismissReport($id)
+    {
+        $report = \App\Models\MessageReport::findOrFail($id);
+        $report->update(['status' => 'dismissed']);
+        return back()->with('status', 'Report dismissed.');
+    }
+
+    public function deleteReportedMessage($id)
+    {
+        $report = \App\Models\MessageReport::findOrFail($id);
+        if ($report->message) {
+            $report->message->delete();
+        }
+        $report->update(['status' => 'resolved']);
+        return back()->with('status', 'Message deleted and report resolved.');
+    }
 }

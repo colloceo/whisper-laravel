@@ -70,9 +70,9 @@
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
                     id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}&background=random" alt=""
-                        width="32" height="32" class="rounded-circle me-2">
-                    <strong>{{ Auth::user()->name }}</strong>
+                    <img src="https://ui-avatars.com/api/?name={{ Auth::user()->anonymous_username }}&background=random"
+                        alt="" width="32" height="32" class="rounded-circle me-2">
+                    <strong>{{ Auth::user()->anonymous_username }}</strong>
                 </a>
                 <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
                     <li><a class="dropdown-item" href="{{ route('home') }}">Back to Site</a></li>

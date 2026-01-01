@@ -32,9 +32,8 @@
             // Apply theme immediately to prevent flash
             (function () {
                 const savedTheme = localStorage.getItem('theme');
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-                if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                // Removed prefersDark check to default to Light theme unless explicitly set to Dark
+                if (savedTheme === 'dark') {
                     document.documentElement.setAttribute('data-theme', 'dark');
                 }
             })();

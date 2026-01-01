@@ -6,13 +6,17 @@ Whispr is a modern, secure, and compassionate communication platform designed to
 
 ## Features
 
-- **Peer Chat**: Real-time messaging with **replies**, **reporting**, and visible sender names.
-- **Admin Dashboard**: Comprehensive management of Users, Chat Rooms, and Crisis Resources.
-- **Crisis Support**: Dynamic access to verified crisis intervention resources.
-- **Journaling**: Private, secure journaling to track thoughts and feelings.
-- **Authentication**: Secure login via Email and Google OAuth.
-- **PWA Support**: Installable on mobile and desktop devices with offline capabilities.
-- **Dark Mode**: Native dark mode support for comfortable usage.
+- **Peer Chat**: Real-time messaging with **replies**, **reporting**, and AI-assigned **Anonymous Usernames** (e.g., "Calm Koala") for privacy.
+- **Admin Dashboard**: Comprehensive management of Users (Promote/Delete), Chat Rooms (CRUD), and Crisis Resources (CRUD).
+- **AI Integration**:
+    -   **Daily Affirmations**: Personalized positive messages based on mood trends.
+    -   **Cognitive Reframing**: AI-powered reframing of negative thoughts into constructive perspectives.
+    -   **Anonymous Identities**: Auto-generated creative usernames for new members.
+-   **Crisis Support**: Dynamic access to verified crisis intervention resources (Hotlines, Websites).
+-   **Journaling**: Private, secure journaling to track thoughts and feelings.
+-   **Authentication**: Secure login via Email and Google OAuth.
+-   **PWA Support**: Installable on mobile and desktop devices with offline capabilities.
+-   **Theme**: Light theme default for a welcoming atmosphere, with dark mode preference support.
 
 ## Tech Stack
 
@@ -20,6 +24,7 @@ Whispr is a modern, secure, and compassionate communication platform designed to
 - **Frontend**: [Blade Templates](https://laravel.com/docs/blade) with [Livewire](https://livewire.laravel.com)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com) & [Bootstrap](https://getbootstrap.com) (Icons)
 - **Bundler**: [Vite](https://vitejs.dev)
+- **AI Service**: Google Gemini API
 - **PWA**: [Vite PWA Plugin](https://vite-pwa-org.netlify.app/)
 - **Database**: SQLite (Default) / MySQL
 
@@ -54,11 +59,12 @@ Whispr is a modern, secure, and compassionate communication platform designed to
     cp .env.example .env
     php artisan key:generate
     ```
+    *Add your `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GEMINI_API_KEY` to .env*
 
 5.  **Database Setup**
     ```bash
     touch database/database.sqlite
-    php artisan migrate
+    php artisan migrate --seed
     ```
 
 6.  **Build Assets**

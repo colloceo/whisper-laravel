@@ -34,16 +34,16 @@
 
                     @if($message->user_id !== auth()->id())
                         <small class="text-muted ms-2 mb-1 fw-bold" style="font-size: 0.7rem;">
-                            {{ $message->user->name }}
+                            {{ $message->user->anonymous_username }}
                         </small>
                     @endif
 
-                    <div class="position-relative group-hover-actions">
+                    <div class="position-relative">
                         <!-- Reply Context -->
                         @if($message->parent)
                             <div class="small text-muted mb-1 ms-2 ps-2 border-start border-3" style="font-size: 0.75rem;">
                                 <i class="bi bi-arrow-return-right me-1"></i>
-                                <strong>{{ $message->parent->user->name }}:</strong>
+                                <strong>{{ $message->parent->user->anonymous_username }}:</strong>
                                 {{ Str::limit($message->parent->content, 30) }}
                             </div>
                         @endif
@@ -51,10 +51,10 @@
                         <!-- Message Bubble -->
                         <div class="p-3 shadow-sm text-break position-relative {{ $message->user_id !== auth()->id() ? 'chat-received' : '' }}"
                             style="max-width: 75vw; width: fit-content;
-                                                border-radius: {{ $message->user_id === auth()->id() ? '15px 15px 0 15px' : '15px 15px 15px 0' }};
-                                                background: {{ $message->user_id === auth()->id() ? 'var(--whisper-blue, #3b82f6)' : '' }};
-                                                color: {{ $message->user_id === auth()->id() ? '#fff' : '' }};
-                                                backdrop-filter: blur(5px);">
+                                                            border-radius: {{ $message->user_id === auth()->id() ? '15px 15px 0 15px' : '15px 15px 15px 0' }};
+                                                            background: {{ $message->user_id === auth()->id() ? 'var(--whisper-blue, #3b82f6)' : '' }};
+                                                            color: {{ $message->user_id === auth()->id() ? '#fff' : '' }};
+                                                            backdrop-filter: blur(5px);">
                             {{ $message->content }}
                         </div>
 
@@ -87,7 +87,8 @@
             @if($replyingTo)
                 <div class="d-flex align-items-center justify-content-between bg-light p-2 mb-2 rounded shadow-sm">
                     <div class="small text-muted">
-                        <i class="bi bi-reply-fill me-1"></i> Replying to <strong>{{ $replyingTo->user->name }}</strong>: 
+                        <i class="bi bi-reply-fill me-1"></i> Replying to
+                        <strong>{{ $replyingTo->user->anonymous_username }}</strong>:
                         "{{ Str::limit($replyingTo->content, 40) }}"
                     </div>
                     <button wire:click="cancelReply" class="btn-close btn-close-sm"></button>
@@ -109,36 +110,37 @@
             </form>
         </div>
     </div>
-    
+
     <!-- Report Modal -->
     @if($showReportModal)
-    <div class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold">Report Message</h5>
-                    <button type="button" class="btn-close" wire:click="closeReportModal"></button>
-                </div>
-                <div class="modal-body">
-                    <textarea wire:model="reportReason" class="form-control mb-3" rows="3" placeholder="Why are you reporting this message? (e.g. Harassment, Spam)"></textarea>
-                    
-                    <div class="d-flex justify-content-end gap-2">
-                        <button class="btn btn-light" wire:click="closeReportModal">Cancel</button>
-                        <button class="btn btn-danger" wire:click="submitReport">Submit Report</button>
+        <div class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold">Report Message</h5>
+                        <button type="button" class="btn-close" wire:click="closeReportModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea wire:model="reportReason" class="form-control mb-3" rows="3"
+                            placeholder="Why are you reporting this message? (e.g. Harassment, Spam)"></textarea>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button class="btn btn-light" wire:click="closeReportModal">Cancel</button>
+                            <button class="btn btn-danger" wire:click="submitReport">Submit Report</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     @endif
 
     <script>
         document.addEventListener('livewire:initialized', () => {
-             Livewire.on('focus-input', () => {
+            Livewire.on('focus-input', () => {
                 document.getElementById('chatInput').focus();
             });
-            
-             // Existing scroll logic...
+
+            // Existing scroll logic...
         });
     </script>
 
