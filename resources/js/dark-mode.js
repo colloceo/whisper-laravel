@@ -4,8 +4,8 @@ export function initDarkMode() {
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    // Apply saved or system preference
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    // Apply saved preference. Default to light.
+    if (savedTheme === 'dark') {
         html.setAttribute('data-theme', 'dark');
         if (toggle) toggle.checked = true;
     } else {

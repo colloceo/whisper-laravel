@@ -88,7 +88,23 @@
                     </div>
                 </div>
 
-                <!-- Response Time -->
+                <!-- Official Email -->
+                <div class="glass-card border-0 shadow-sm mb-4" style="border-radius: 1.5rem;">
+                    <div class="card-body p-3 d-flex align-items-center">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                            style="width: 40px; height: 40px; background-color: #E0E7FF; color: #4F46E5;">
+                            <i class="bi bi-envelope-at-fill"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-dark small">Official Email</div>
+                            <div class="text-muted" style="font-size: 0.75rem;">
+                                <a href="mailto:whispr.w26@gmail.com"
+                                    class="text-decoration-none text-muted">whispr.w26@gmail.com</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="glass-card border-0 shadow-sm mb-4" style="border-radius: 1.5rem;">
                     <div class="card-body p-3 d-flex align-items-center">
                         <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
