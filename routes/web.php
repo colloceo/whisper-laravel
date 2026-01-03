@@ -66,5 +66,10 @@ Route::middleware('auth')->group(function () {
             Route::patch('/reports/{id}/dismiss', [App\Http\Controllers\AdminController::class, 'dismissReport'])->name('reports.dismiss');
             Route::delete('/reports/{id}/delete-message', [App\Http\Controllers\AdminController::class, 'deleteReportedMessage'])->name('reports.delete_message');
         });
+
+        // Donation
+        Route::get('/donate', [App\Http\Controllers\PaymentController::class, 'donate'])->name('donate');
+        Route::get('/donate/success', [App\Http\Controllers\PaymentController::class, 'success'])->name('donate.success');
+        Route::get('/donate/cancel', [App\Http\Controllers\PaymentController::class, 'cancel'])->name('donate.cancel');
     });
 });

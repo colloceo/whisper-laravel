@@ -153,10 +153,48 @@
                             </a>
 
                             <a href="{{ route('support.contact') }}"
-                                class="list-group-item list-group-item-action bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
+                                class="list-group-item list-group-item-action bg-transparent border-light py-3 d-flex justify-content-between align-items-center">
                                 <span class="text-dark fw-medium">Contact Support</span>
                                 <i class="bi bi-chevron-right text-muted small"></i>
                             </a>
+
+                            <div id="paypal-button-container" class="mt-3"></div>
+
+                            @push('scripts')
+                                <script
+                                    src="https://www.paypal.com/sdk/js?client-id={{ config('paypal.sandbox.client_id') }}&currency=USD"></script>
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", function () {
+                                        if (typeof paypal !== 'undefined') {
+                                            paypal.Buttons({
+                                                style: {
+                                                    layout: 'horizontal',
+                                                    color: 'blue',
+                                                    shape: 'pill',
+                                                    label: 'donate'
+                                                },
+                                                createOrder: function (data, actions) {
+                                                    return actions.order.create({
+                                                        purchase_units: [{
+                                                            amount: {
+                                                                value: '5.00'
+                                                            }
+                                                        }]
+                                                    });
+                                                },
+                                                onApprove: function (data, actions) {
+                                                    return actions.order.capture().then(function (details) {
+                                                        window.location.href = "{{ route('donate.success') }}";
+                                                    });
+                                                },
+                                                onCancel: function (data) {
+                                                    window.location.href = "{{ route('donate.cancel') }}";
+                                                }
+                                            }).render('#paypal-button-container');
+                                        }
+                                    });
+                                </script>
+                            @endpush
 
                         </div>
                     </div>
