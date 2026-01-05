@@ -15,22 +15,29 @@ class HomeController extends Controller
     {
         $user = auth()->user();
 
-        // Get mood logs for the last 7 days
-        $rawMoodLogs = $user->moodLogs()
-            ->where('created_at', '>=', now()->subDays(7))
-            ->oldest()
-            ->get();
+        // Generate the current week (Sunday to Saturday)
+        $startOfWeek = now()->startOfWeek(0); // 0 = Sunday
+        $days = collect(range(0, 6))->map(function ($i) use ($startOfWeek) {
+            return $startOfWeek->copy()->addDays($i)->format('Y-m-d');
+        });
 
-        // Aggregate by date (average score per day)
-        $moodLogs = $rawMoodLogs->groupBy(function ($date) {
-            return $date->created_at->format('Y-m-d');
-        })->map(function ($dayLogs) {
+        // Get mood logs for the last 14 days (wider window to ensure we catch recent but not immediate logs)
+        $rawMoodLogs = $user->moodLogs()
+            ->where('created_at', '>=', now()->subDays(14))
+            ->get()
+            ->groupBy(function ($log) {
+                return $log->created_at->format('Y-m-d');
+            });
+
+        // Map each of the 7 days to its average mood score (or null)
+        $moodLogs = $days->map(function ($date) use ($rawMoodLogs) {
+            $dayLogs = $rawMoodLogs->get($date);
             return [
-                'date' => $dayLogs->first()->created_at, // Use first log's full timestamp for date obj
-                'mood_score' => round($dayLogs->avg('mood_score'), 1),
-                'count' => $dayLogs->count()
+                'date' => $date,
+                'mood_score' => $dayLogs ? round($dayLogs->avg('mood_score'), 1) : null,
+                'count' => $dayLogs ? $dayLogs->count() : 0,
             ];
-        })->values();
+        });
 
         // Get daily affirmation (Cache for 24 hours per user)
         $affirmation = Cache::remember("affirmation_{$user->id}_" . now()->format('Y-m-d'), 60 * 24, function () use ($aiService, $moodLogs) {
@@ -39,9 +46,7 @@ class HomeController extends Controller
             return $aiService->getDailyAffirmation(round($avgMood, 1));
         });
 
-        $unreadNotificationsCount = $user->unreadNotifications->count();
-
-        return view('home', compact('moodLogs', 'affirmation', 'unreadNotificationsCount'));
+        return view('home', compact('moodLogs', 'affirmation'));
     }
 
     public function storeMood(Request $request)

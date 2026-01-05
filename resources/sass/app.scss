@@ -150,7 +150,14 @@ body {
     animation: ambient-shift 15s ease infinite;
     color: #0f172a; // Slate-900
     -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
+    height: 100dvh;
+    overflow: hidden; // Lock main window scroll
+}
+
+#app {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes ambient-shift {
@@ -333,6 +340,22 @@ body {
     display: none !important;
 }
 
+[data-theme="dark"] {
+    .bottom-nav {
+        background: rgba(30, 41, 59, 0.95);
+        border-color: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.3);
+
+        .mobile-nav-item {
+            color: #94a3b8;
+
+            &.active {
+                color: #60a5fa !important;
+            }
+        }
+    }
+}
+
 // Navigation Links
 .nav-link-custom {
     display: flex;
@@ -387,16 +410,127 @@ body {
     }
 }
 
-// Main Content Adjustment
-.main-content {
-    transition: margin-left 0.3s ease;
+// Full Layout Refactor
+.main-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    position: relative;
+    height: 100dvh;
 
     @include media-breakpoint-up(md) {
-        margin-left: 280px;
+        margin-left: 280px; // Sidebar width
     }
+}
+
+.content-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0; // Crucial for flex scrolling
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    z-index: 1;
+
+    // We no longer need .has-header padding-top because header is in flex flow
 
     @include media-breakpoint-down(md) {
-        margin-left: 0;
-        padding-bottom: 80px; // Space for bottom nav
+        padding-bottom: 180px !important; // Absolute maximum space for fixed bottom nav
+    }
+}
+
+// Global Header Wrapper (for News-like double bar)
+.global-header-wrapper {
+    position: relative; // Changed from fixed to flow-based
+    top: 0;
+    z-index: 2000;
+    transition: all 0.3s ease;
+    flex-shrink: 0; // Ensure header doesn't shrink
+}
+
+.global-header {
+    background: #ffffff;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.brand-text {
+    color: #1e293b;
+    transition: color 0.3s ease;
+}
+
+.tagline {
+    color: #64748b;
+}
+
+// Dark Mode Support for Header
+[data-theme="dark"] {
+    .global-header {
+        background: #1e293b;
+        border-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .brand-text {
+        color: #f1f5f9 !important;
+    }
+
+    .tagline {
+        color: #94a3b8 !important;
+    }
+
+    .bi {
+        color: #f1f5f9 !important;
+    }
+}
+
+.sidebar {
+    padding-top: 2rem !important; // Restore sidebar padding
+}
+
+// Layout Cards Theme Support
+.ai-insight-card {
+    background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%);
+    border-radius: 1.5rem;
+    border: none;
+    border-left: 5px solid var(--whisper-blue);
+    transition: all 0.3s ease;
+}
+
+.insight-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reframe-card {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+}
+
+[data-theme="dark"] {
+    .ai-insight-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+        border-color: rgba(69, 123, 157, 0.4) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .insight-icon-wrapper {
+        background: rgba(15, 23, 42, 0.6) !important;
+        color: var(--whisper-blue) !important;
+    }
+
+    .reframe-card {
+        background: rgba(15, 23, 42, 0.4) !important;
     }
 }

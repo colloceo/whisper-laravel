@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('page_title', 'Home')
 
 @section('content')
 <div class="container py-4">
@@ -11,19 +12,10 @@
                     <img src="https://ui-avatars.com/api/?name={{ Auth::user()->anonymous_username }}&background=b2cbf2&color=fff&rounded=true" 
                          alt="Avatar" class="rounded-circle me-3 border border-2 border-white shadow-sm" style="width: 50px; height: 50px;">
                     <div>
-                        <h5 class="fw-bold text-dark mb-0" id="greeting-text">Good {{ now()->format('H') < 12 ? 'Morning' : (now()->format('H') < 18 ? 'Afternoon' : 'Evening') }},</h5>
+                        <h5 class="fw-bold brand-text mb-0" id="greeting-text">Good {{ now()->format('H') < 12 ? 'Morning' : (now()->format('H') < 18 ? 'Afternoon' : 'Evening') }},</h5>
                         <small class="text-muted">{{ Auth::user()->anonymous_username }}</small>
                     </div>
                 </div>
-                <!-- Notification Bell -->
-                <div class="position-relative p-2 rounded-circle glass-card" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                    <i class="bi bi-bell text-secondary"></i>
-                    @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light">
-                            {{ $unreadNotificationsCount }}
-                            <span class="visually-hidden">New alerts</span>
-                        </span>
-                    @endif
                 </div>
             </div>
 
@@ -33,7 +25,7 @@
                 <div class="card-body p-4 text-center">
                     <h6 class="text-uppercase fw-bold text-muted small mb-3" style="letter-spacing: 1px;">Daily Affirmation</h6>
                     <blockquote class="mb-0">
-                        <p class="fst-italic fw-medium fs-5 text-dark mb-0" style="font-family: 'Poppins', serif;">
+                        <p class="fst-italic fw-medium fs-5 brand-text mb-0" style="font-family: 'Poppins', serif;">
                             "{{ $affirmation ?? 'You are stronger than you know.' }}"
                         </p>
                     </blockquote>
@@ -45,7 +37,7 @@
             <!-- 3. Section B: Mood Tracker -->
             <div class="glass-card border-0 mb-4">
                 <div class="card-body p-4 text-center">
-                    <h6 class="fw-bold text-dark mb-4">How are you feeling right now?</h6>
+                    <h6 class="fw-bold brand-text mb-4">How are you feeling right now?</h6>
                     
                     <form method="POST" action="{{ route('mood.store') }}">
                         @csrf
@@ -80,7 +72,7 @@
                             <div class="rounded-circle bg-soft-blue p-3 mb-2 text-primary">
                                 <i class="bi bi-journal-richtext fs-4"></i>
                             </div>
-                            <span class="fw-bold text-dark small">Journal</span>
+                            <span class="fw-bold brand-text small">Journal</span>
                         </div>
                     </a>
                 </div>
@@ -92,7 +84,7 @@
                             <div class="rounded-circle bg-soft-purple p-3 mb-2 text-purple">
                                 <i class="bi bi-people-fill fs-4"></i>
                             </div>
-                            <span class="fw-bold text-dark small">Community</span>
+                            <span class="fw-bold brand-text small">Community</span>
                         </div>
                     </a>
                 </div>
@@ -105,7 +97,7 @@
                             <div class="rounded-circle bg-soft-warm p-3 mb-2 text-danger">
                                 <i class="bi bi-heart-pulse-fill fs-4"></i>
                             </div>
-                            <span class="fw-bold text-dark small">Crisis Support</span>
+                            <span class="fw-bold brand-text small">Crisis Support</span>
                         </div>
                     </a>
                 </div>
@@ -117,7 +109,7 @@
                             <div class="rounded-circle bg-light p-3 mb-2 text-secondary">
                                 <i class="bi bi-graph-up fs-4"></i>
                             </div>
-                            <span class="fw-bold text-dark small">My Progress</span>
+                            <span class="fw-bold brand-text small">My Progress</span>
                         </div>
                     </a>
                 </div>
@@ -126,8 +118,8 @@
             <div class="glass-card border-0 mb-5">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold text-dark mb-0">Weekly Emotional Rhythm</h6>
-                        <span class="badge bg-light text-muted rounded-pill">Last 7 Days</span>
+                        <h6 class="fw-bold brand-text mb-0">Weekly Emotional Rhythm</h6>
+                        <span class="badge bg-light text-muted rounded-pill">This Week</span>
                     </div>
                     
                     <div class="chart-container" style="position: relative; height:200px; width:100%">
@@ -181,8 +173,12 @@
             <!-- Chart.js -->
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Update greeting based on local time
+                window.initHome = function() {
+                    if (typeof Chart === 'undefined') {
+                        setTimeout(window.initHome, 100);
+                        return;
+                    }
+
                     const greetingText = document.getElementById('greeting-text');
                     if (greetingText) {
                         const hour = new Date().getHours();
@@ -192,18 +188,42 @@
                         greetingText.textContent = greeting + ',';
                     }
 
-                    const ctx = document.getElementById('moodChart').getContext('2d');
+                    const canvas = document.getElementById('moodChart');
+                    if (!canvas) return;
+
+                    const ctx = canvas.getContext('2d');
+                    if (window.moodChartInstance) {
+                        window.moodChartInstance.destroy();
+                    }
+
+                    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                    const textColor = isDark ? '#94a3b8' : '#64748b';
+                    const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
                     
                     const moodData = @json($moodLogs);
-                    
                     const labels = moodData.map(log => {
                         const date = new Date(log.date);
                         return date.toLocaleDateString('en-US', { weekday: 'short' });
                     });
-
                     const dataPoints = moodData.map(log => log.mood_score);
+                    const hasData = dataPoints.some(val => val !== null);
 
-                    new Chart(ctx, {
+                    // Handle empty state message
+                    const existingMsg = document.getElementById('no-data-msg');
+                    if (existingMsg) existingMsg.remove();
+                    
+                    if (!hasData) {
+                        const container = document.querySelector('.chart-container');
+                        if (container) {
+                            container.insertAdjacentHTML('afterbegin', `
+                                <div id="no-data-msg" class="position-absolute top-50 start-50 translate-middle text-center w-100" style="z-index: 10;">
+                                    <p class="text-muted small mb-0">No stats yet. Log your mood to see your rhythm!</p>
+                                </div>
+                            `);
+                        }
+                    }
+
+                    window.moodChartInstance = new Chart(ctx, {
                         type: 'line',
                         data: {
                             labels: labels,
@@ -213,65 +233,61 @@
                                 borderColor: '#a8dadc',
                                 backgroundColor: 'rgba(168, 218, 220, 0.2)',
                                 borderWidth: 3,
-                                tension: 0.4, // Smooth curves
+                                tension: 0.4,
                                 pointBackgroundColor: '#ffffff',
                                 pointBorderColor: '#457b9d',
                                 pointRadius: 4,
                                 pointHoverRadius: 6,
-                                fill: true
+                                fill: true,
+                                spanGaps: true
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
                             interaction: {
-                                intersect: false, // Allow clicking anywhere on the vertical slice
+                                intersect: false,
                                 mode: 'index',
                             },
                             onClick: (e) => {
                                 const canvasPosition = Chart.helpers.getRelativePosition(e, e.chart);
-                                
-                                // Substitute the appropriate scale IDs
                                 const dataX = e.chart.scales.x.getValueForPixel(canvasPosition.x);
                                 
                                 if (dataX >= 0 && dataX < moodData.length) {
                                     const log = moodData[dataX];
-                                    const date = log.date.split('T')[0]; // Extract Y-m-d
-                                    const score = Math.round(log.mood_score);
+                                    if (!log.date) return;
+                                    const date = log.date;
+                                    const score = log.mood_score ? Math.round(log.mood_score) : 3;
 
-                                    // Populate Modal
                                     document.getElementById('editMoodDate').value = date;
                                     document.getElementById('editMoodDateDisplay').textContent = new Date(date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
                                     
-                                    // Check the radio button corresponding to the score
                                     const radio = document.getElementById('edit_mood_' + score);
                                     if(radio) radio.checked = true;
 
-                                    // Show Modal
-                                    const modal = new bootstrap.Modal(document.getElementById('editMoodModal'));
-                                    modal.show();
+                                    const modalElement = document.getElementById('editMoodModal');
+                                    if (modalElement && typeof bootstrap !== 'undefined') {
+                                        const modal = new bootstrap.Modal(modalElement);
+                                        modal.show();
+                                    }
                                 }
                             },
                             plugins: {
                                 legend: { display: false },
                                 tooltip: {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                    titleColor: '#1d3557',
-                                    bodyColor: '#1d3557',
-                                    borderColor: '#e5e7eb',
+                                    enabled: hasData,
+                                    backgroundColor: isDark ? '#1e293b' : 'rgba(255, 255, 255, 0.9)',
+                                    titleColor: isDark ? '#f1f5f9' : '#1d3557',
+                                    bodyColor: isDark ? '#f1f5f9' : '#1d3557',
+                                    borderColor: isDark ? 'rgba(255,255,255,0.1)' : '#e5e7eb',
                                     borderWidth: 1,
                                     padding: 10,
                                     displayColors: false,
                                     callbacks: {
                                         label: function(context) {
                                             const value = context.parsed.y;
-                                            const labels = {
-                                                1: 'Low',
-                                                2: 'Okay',
-                                                3: 'Fine',
-                                                4: 'Good',
-                                                5: 'Great'
-                                            };
+                                            if (value === null) return 'No data';
+                                            const labels = { 1: 'Low', 2: 'Okay', 3: 'Fine', 4: 'Good', 5: 'Great' };
                                             return labels[value] || value;
                                         }
                                     }
@@ -283,31 +299,32 @@
                                     max: 5,
                                     ticks: {
                                         stepSize: 1,
+                                        color: textColor,
                                         callback: function(value) {
-                                            const labels = {
-                                                1: 'Low',
-                                                2: 'Okay',
-                                                3: 'Fine',
-                                                4: 'Good',
-                                                5: 'Great'
-                                            };
+                                            const labels = { 1: 'Low', 2: 'Okay', 3: 'Fine', 4: 'Good', 5: 'Great' };
                                             return labels[value] || '';
                                         },
-                                        font: { family: "'Poppins', sans-serif" }
+                                        font: { family: "'Poppins', sans-serif", size: 10 }
                                     },
-                                    grid: { display: false }
+                                    grid: { color: gridColor, drawBorder: false }
                                 },
                                 x: {
-                                    grid: { display: false },
                                     ticks: {
-                                        font: { family: "'Poppins', sans-serif" }
-                                    }
+                                        color: textColor,
+                                        font: { family: "'Poppins', sans-serif", size: 10 }
+                                    },
+                                    grid: { display: false }
                                 }
                             },
-
                         }
                     });
-                });
+
+                    // Expose for theme toggle
+                    window.renderMoodChart = window.initHome;
+                };
+
+                document.addEventListener('DOMContentLoaded', () => setTimeout(window.initHome, 50));
+                document.addEventListener('livewire:navigated', () => setTimeout(window.initHome, 50));
             </script>
 
         </div>

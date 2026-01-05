@@ -1,7 +1,7 @@
 <div class="container py-4">
     <div class="row mb-4 text-center">
         <div class="col-md-12">
-            <h3 class="fw-bold mb-1" style="color: #1e293b;">Peer Support</h3>
+            <h3 class="fw-bold mb-1 brand-text">Peer Support</h3>
             <p class="text-muted small">Connect with others in a safe, anonymous environment.</p>
         </div>
     </div>
@@ -16,7 +16,7 @@
                                 style="width: 50px; height: 50px; background: var(--whisper-blue); color: white;">
                                 <i class="bi bi-{{ $room->icon ?? 'chat-dots' }} fs-4"></i>
                             </div>
-                            <h5 class="fw-bold mb-0 text-dark">{{ $room->name }}</h5>
+                            <h5 class="fw-bold mb-0 brand-text">{{ $room->name }}</h5>
                         </div>
                         <p class="text-muted small mb-0">{{ $room->description }}</p>
                     </div>

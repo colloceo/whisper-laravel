@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
         })->name('chat');
         Route::get('/chat/room/{id}', App\Livewire\ChatRoom::class)->name('chat.room');
         Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile');
+        Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('/crisis', function () {
             return view('crisis');
         })->name('crisis');

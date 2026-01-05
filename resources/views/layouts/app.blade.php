@@ -41,27 +41,24 @@
         @auth
             <!-- Desktop Sidebar -->
             <div class="sidebar d-none d-md-flex">
-                <div class="mb-5 px-2">
-                    <h3 class="fw-bold text-primary mb-0">Whispr.</h3>
-                    <small class="text-muted">Your safe space</small>
-                </div>
-
                 <div class="flex-grow-1">
-                    <a href="{{ route('home') }}" class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}">
+                    <a href="{{ route('home') }}" wire:navigate
+                        class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}">
                         <i class="bi bi-house-door"></i> Dashboard
                     </a>
-                    <a href="{{ route('journal') }}"
+                    <a href="{{ route('journal') }}" wire:navigate
                         class="nav-link-custom {{ request()->routeIs('journal') ? 'active' : '' }}">
                         <i class="bi bi-journal-text"></i> Journal
                     </a>
-                    <a href="{{ route('chat') }}" class="nav-link-custom {{ request()->routeIs('chat') ? 'active' : '' }}">
+                    <a href="{{ route('chat') }}" wire:navigate
+                        class="nav-link-custom {{ request()->routeIs('chat') ? 'active' : '' }}">
                         <i class="bi bi-chat-dots"></i> Peer Chat
                     </a>
-                    <a href="{{ route('crisis') }}"
+                    <a href="{{ route('crisis') }}" wire:navigate
                         class="nav-link-custom {{ request()->routeIs('crisis') ? 'active' : '' }}">
                         <i class="bi bi-heart-pulse"></i> Crisis Support
                     </a>
-                    <a href="{{ route('profile') }}"
+                    <a href="{{ route('profile') }}" wire:navigate
                         class="nav-link-custom {{ request()->routeIs('profile') ? 'active' : '' }}">
                         <i class="bi bi-person"></i> Profile
                     </a>
@@ -81,24 +78,27 @@
 
             <!-- Mobile Bottom Nav -->
             <div class="bottom-nav d-md-none">
-                <a href="{{ route('home') }}" class="mobile-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
+                <a href="{{ route('home') }}" wire:navigate
+                    class="mobile-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
                     <i class="bi bi-house-door{{ request()->routeIs('home') ? '-fill' : '' }}"></i>
                     <span>Home</span>
                 </a>
-                <a href="{{ route('journal') }}"
+                <a href="{{ route('journal') }}" wire:navigate
                     class="mobile-nav-item {{ request()->routeIs('journal') ? 'active' : '' }}">
                     <i class="bi bi-file-text{{ request()->routeIs('journal') ? '-fill' : '' }}"></i>
                     <span>Journal</span>
                 </a>
-                <a href="{{ route('chat') }}" class="mobile-nav-item {{ request()->routeIs('chat') ? 'active' : '' }}">
+                <a href="{{ route('chat') }}" wire:navigate
+                    class="mobile-nav-item {{ request()->routeIs('chat') ? 'active' : '' }}">
                     <i class="bi bi-chat-fill"></i>
                     <span>Chat</span>
                 </a>
-                <a href="{{ route('crisis') }}" class="mobile-nav-item {{ request()->routeIs('crisis') ? 'active' : '' }}">
+                <a href="{{ route('crisis') }}" wire:navigate
+                    class="mobile-nav-item {{ request()->routeIs('crisis') ? 'active' : '' }}">
                     <i class="bi bi-exclamation-circle-fill"></i>
                     <span>Crisis</span>
                 </a>
-                <a href="{{ route('profile') }}"
+                <a href="{{ route('profile') }}" wire:navigate
                     class="mobile-nav-item {{ request()->routeIs('profile') ? 'active' : '' }}">
                     <i class="bi bi-person-fill"></i>
                     <span>Profile</span>
@@ -106,23 +106,49 @@
             </div>
         @endauth
 
-        <!-- Main Content -->
-        <main class="@auth main-content @endauth">
-            @guest
-                <!-- Guest Navbar (Login/Register pages only) -->
-                <nav class="navbar navbar-expand-md navbar-light glass-card m-3 d-md-none">
-                    <div class="container">
-                        <a class="navbar-brand fw-bold" href="{{ url('/') }}">Whispr.</a>
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#navbarSupportedContent">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                    </div>
-                </nav>
-            @endguest
+        <div class="main-wrapper">
+            @if(!request()->routeIs('chat.room'))
+                <header class="global-header-wrapper shadow-sm">
+                    <div class="global-header">
+                        <div class="d-flex align-items-center justify-content-between w-100">
+                            <!-- Left side: Brand info -->
+                            <div class="d-flex align-items-center">
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex align-items-center">
+                                        <h4 class="fw-bold mb-0 brand-text"
+                                            style="font-family: 'Poppins', sans-serif; line-height: 1;">Whispr.</h4>
+                                        <span class="mx-2 text-muted opacity-50 tagline">|</span>
+                                        <h5 class="mb-0 brand-text fw-medium"
+                                            style="font-family: 'Poppins', sans-serif; font-size: 1rem;">
+                                            @yield('page_title', 'Dashboard')</h5>
+                                    </div>
+                                    <small class="text-muted d-none d-sm-block tagline"
+                                        style="font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Your
+                                        Safe Space</small>
+                                </div>
+                            </div>
 
-            @yield('content')
-        </main>
+                            <!-- Right side: Utility Icons -->
+                            <div class="d-flex align-items-center gap-2">
+                                @auth
+                                    <livewire:notifications-dropdown />
+                                @endauth
+
+                                <button class="btn btn-link text-dark p-1 border-0 shadow-none" id="theme-toggle"
+                                    onclick="let theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('theme', theme); if(window.renderMoodChart) window.renderMoodChart();">
+                                    <i class="bi bi-moon fs-5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            @endif
+
+            <!-- Main Scrollable Content -->
+            <main class="content-scroll-area">
+                @yield('content')
+            </main>
+        </div>
     </div>
     @livewireScripts
     @stack('scripts')

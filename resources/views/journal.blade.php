@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('page_title', 'Journal')
 
 @section('content')
     <div class="container py-4">

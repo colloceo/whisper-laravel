@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('page_title', 'Crisis Support')
 
 @section('content')
     <style>
@@ -78,14 +79,8 @@
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
 
-                <!-- Header -->
                 <div class="text-center mb-4 position-relative">
-                    <a href="{{ route('home') }}"
-                        class="btn btn-light rounded-circle shadow-sm position-absolute start-0 top-50 translate-middle-y"
-                        style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-chevron-left"></i>
-                    </a>
-                    <h4 class="fw-bold mb-0 text-warm-dark">Crisis Support</h4>
+                    <h4 class="fw-bold mb-0 brand-text">Crisis Support</h4>
                     <p class="text-muted small mb-0">Help is always available</p>
                 </div>
 
@@ -107,14 +102,14 @@
                 </div>
 
                 <!-- Section B: 24/7 Hotlines Grid -->
-                <h6 class="fw-bold text-warm-dark mb-3 ps-1">24/7 Crisis Hotlines - Kenya</h6>
+                <h6 class="fw-bold brand-text mb-3 ps-1">24/7 Crisis Hotlines - Kenya</h6>
                 <div class="row g-3 mb-5">
                     <!-- Befrienders -->
                     <div class="col-12 col-md-6">
                         <div class="glass-card border-0 p-3 h-100 d-flex flex-column justify-content-between"
                             style="border-radius: 1.25rem;">
                             <div class="mb-3">
-                                <h6 class="fw-bold text-dark mb-1">Befrienders Kenya</h6>
+                                <h6 class="fw-bold brand-text mb-1">Befrienders Kenya</h6>
                                 <small class="text-muted">Suicide prevention hotline</small>
                             </div>
                             <a href="tel:+254722178177" class="btn btn-call btn-sm w-100 rounded-pill fw-bold py-2">
@@ -128,7 +123,7 @@
                         <div class="glass-card border-0 p-3 h-100 d-flex flex-column justify-content-between"
                             style="border-radius: 1.25rem;">
                             <div class="mb-3">
-                                <h6 class="fw-bold text-dark mb-1">Child Helpline Kenya</h6>
+                                <h6 class="fw-bold brand-text mb-1">Child Helpline Kenya</h6>
                                 <small class="text-muted">Support for children & teens</small>
                             </div>
                             <a href="tel:116" class="btn btn-call btn-sm w-100 rounded-pill fw-bold py-2">
@@ -142,7 +137,7 @@
                         <div class="glass-card border-0 p-3 h-100 d-flex flex-column justify-content-between"
                             style="border-radius: 1.25rem;">
                             <div class="mb-3">
-                                <h6 class="fw-bold text-dark mb-1">Gender Violence Recovery</h6>
+                                <h6 class="fw-bold brand-text mb-1">Gender Violence Recovery</h6>
                                 <small class="text-muted">24/7 support for GBV survivors</small>
                             </div>
                             <a href="tel:1195" class="btn btn-call btn-sm w-100 rounded-pill fw-bold py-2">
@@ -167,7 +162,7 @@
                 </div>
 
                 <!-- Section C: Immediate Coping Strategies -->
-                <h6 class="fw-bold text-warm-dark mb-3 ps-1">Calm Down Now</h6>
+                <h6 class="fw-bold brand-text mb-3 ps-1">Calm Down Now</h6>
                 <div class="row g-3 mb-5">
                     <!-- Guided Breathing -->
                     <div class="col-12">
@@ -178,7 +173,7 @@
                                     <i class="bi bi-wind fs-4"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-dark">Guided Breathing</div>
+                                    <div class="fw-bold brand-text">Guided Breathing</div>
                                     <small class="text-muted">4-7-8 Breathing Technique</small>
                                 </div>
                             </div>
@@ -195,7 +190,7 @@
                                     <i class="bi bi-sign-stop fs-4"></i> <!-- Anchor substitute -->
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-dark">Grounding</div>
+                                    <div class="fw-bold brand-text">Grounding</div>
                                     <small class="text-muted">5-4-3-2-1 Technique</small>
                                 </div>
                             </div>
@@ -213,7 +208,7 @@
                                         <i class="bi bi-people-fill fs-4"></i>
                                     </div>
                                     <div>
-                                        <div class="fw-bold text-dark">Reach Out</div>
+                                        <div class="fw-bold brand-text">Reach Out</div>
                                         <small class="text-muted">Call a Friend</small>
                                     </div>
                                 </div>
@@ -225,7 +220,7 @@
 
                 <!-- Section D: Professional Resources -->
                 <div class="glass-card border-0 p-4 mb-4" style="border-radius: 1.5rem;">
-                    <h6 class="fw-bold text-warm-dark mb-3">Professional Resources</h6>
+                    <h6 class="fw-bold brand-text mb-3">Professional Resources</h6>
                     <div class="list-group list-group-flush bg-transparent">
                         @php
                             $resources = \App\Models\CrisisResource::where('is_active', true)->whereIn('type', ['website', 'organization'])->get();
@@ -234,7 +229,7 @@
                         @foreach($resources as $resource)
                             <a href="{{ $resource->url ?? '#' }}" target="_blank"
                                 class="list-group-item list-group-item-action bg-transparent border-light py-2 d-flex justify-content-between align-items-center ps-0">
-                                <span class="text-dark">{{ $resource->name }}</span>
+                                <span class="brand-text">{{ $resource->name }}</span>
                                 <i class="bi bi-box-arrow-up-right text-muted small"></i>
                             </a>
                         @endforeach

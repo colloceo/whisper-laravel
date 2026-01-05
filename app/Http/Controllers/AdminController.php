@@ -27,11 +27,12 @@ class AdminController extends Controller
 
     public function toggleAdmin(User $user)
     {
-        // Prevent self-demotion if you are the only admin (optional safety, skipping for MVP)
+        // Prevent self-demotion
         if ($user->id === auth()->id()) {
             return back()->with('error', 'You cannot change your own admin status.');
         }
 
+        $user->is_admin = !$user->is_admin;
         $user->save();
 
         $status = $user->is_admin ? 'promoted to Admin' : 'demoted from Admin';

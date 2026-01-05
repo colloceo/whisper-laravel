@@ -1,0 +1,46 @@
+.sidebar {
+    padding-top: 2rem !important; // Restore sidebar padding
+}
+
+// AI Insight Card Theme Support
+.ai-insight-card {
+    background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%);
+    border-radius: 1.5rem;
+    border: none;
+    border-left: 5px solid var(--whisper-blue);
+    transition: all 0.3s ease;
+}
+
+.insight-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+// Reframe Card (History) Theme Support
+.reframe-card {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+}
+
+[data-theme="dark"] {
+    .ai-insight-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+        border-color: rgba(69, 123, 157, 0.4) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .insight-icon-wrapper {
+        background: rgba(15, 23, 42, 0.6) !important;
+        color: var(--whisper-blue) !important;
+    }
+
+    .reframe-card {
+        background: rgba(15, 23, 42, 0.4) !important;
+    }
+}

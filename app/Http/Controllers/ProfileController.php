@@ -38,4 +38,26 @@ class ProfileController extends Controller
 
         return view('profile', compact('user', 'daysActive', 'journalCount', 'moodCheckins', 'savedInsights'));
     }
+
+    /**
+     * Delete the user's account.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(Request $request)
+    {
+        $user = Auth::user();
+
+        Auth::logout();
+
+        if ($user->delete()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect('/')->with('status', 'Your account has been deleted.');
+        }
+
+        return redirect()->back()->with('error', 'Account could not be deleted.');
+    }
 }

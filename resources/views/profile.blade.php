@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('page_title', 'Profile')
 
 @section('content')
     <div class="container py-4">
@@ -7,7 +8,7 @@
 
                 <!-- Header -->
                 <div class="text-center mb-5">
-                    <h4 class="fw-bold mb-1" style="color: #1e293b; font-family: 'Poppins', sans-serif;">Profile</h4>
+                    <h4 class="fw-bold mb-1 brand-text" style="font-family: 'Poppins', sans-serif;">Profile</h4>
                     <p class="text-muted" style="font-family: 'Inter', sans-serif;">Your wellness journey</p>
                 </div>
 
@@ -114,18 +115,7 @@
                         </div>
                     </div>
 
-                    <!-- Dark Mode -->
-                    <div class="glass-card border-0 p-3 mb-3 d-flex justify-content-between align-items-center"
-                        style="border-radius: 1.25rem;">
-                        <div>
-                            <div class="fw-bold text-dark" style="font-size: 0.95rem;">Dark Mode</div>
-                            <div class="text-muted small" style="font-size: 0.75rem;">Easier on the eyes</div>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="darkModeToggle"
-                                style="width: 2.5em; height: 1.25em;">
-                        </div>
-                    </div>
+
                 </div>
 
                 <!-- Support & Resources -->
@@ -200,13 +190,23 @@
                     </div>
                 </div>
 
-                <!-- Logout -->
-                <div class="text-center pb-4">
+                <!-- Logout & Delete -->
+                <div class="text-center pb-5">
                     <a href="{{ route('logout') }}"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                        class="btn btn-link text-danger text-decoration-none fw-bold" style="font-size: 0.9rem;">
+                        class="btn btn-link text-muted text-decoration-none fw-bold me-3" style="font-size: 0.9rem;">
                         Log Out
                     </a>
+
+                    <form id="delete-account-form" action="{{ route('profile.destroy') }}" method="POST" class="d-inline"
+                        onsubmit="return confirm('Are you sure you want to permanently delete your account? This action cannot be undone.');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-link text-danger text-decoration-none fw-bold"
+                            style="font-size: 0.9rem;">
+                            Delete Account
+                        </button>
+                    </form>
                 </div>
 
             </div>

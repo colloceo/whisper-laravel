@@ -2,7 +2,7 @@
     <div class="col-md-7 mb-4">
         <!-- Journal Input Card -->
         <div class="glass-card border-0 p-4 mb-4">
-            <h5 class="fw-bold mb-3 text-dark">What's on your mind?</h5>
+            <h5 class="fw-bold mb-3 brand-text">What's on your mind?</h5>
             <p class="text-muted small mb-4">Share your thoughts freely. Our AI will help transform them into positive
                 insights.</p>
 
@@ -47,16 +47,15 @@
 
         <!-- AI Insight Card (Conditional) -->
         @if($aiResponse)
-            <div class="card border-0 p-4 mb-4 shadow-sm"
-                style="background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%); border-radius: 1.5rem; border-left: 5px solid var(--whisper-blue);">
+            <div class="ai-insight-card p-4 mb-4 shadow-sm">
                 <div class="d-flex align-items-center mb-3">
-                    <div class="rounded-circle bg-white p-2 shadow-sm me-3 text-primary d-flex align-items-center justify-content-center"
-                        style="width: 40px; height: 40px;">
+                    <div
+                        class="insight-icon-wrapper p-2 shadow-sm me-3 text-primary d-flex align-items-center justify-content-center">
                         <i class="bi bi-stars"></i>
                     </div>
                     <h6 class="fw-bold mb-0 text-primary">Whispr's Insight</h6>
                 </div>
-                <p class="mb-0" style="color: #334155; line-height: 1.6;">
+                <p class="mb-0 brand-text" style="line-height: 1.6;">
                     {{ $aiResponse }}
                 </p>
             </div>
@@ -69,33 +68,40 @@
 
         <div class="d-flex flex-column gap-3">
             @forelse($entries as $entry)
-                <div class="glass-card border-0 p-3 hover-scale transition-all position-relative overflow-hidden">
+                <div class="glass-card border-0 p-3 hover-scale transition-all position-relative overflow-hidden mb-3">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <small class="fw-bold text-dark">{{ $entry->created_at->format('M d, Y') }}</small>
-                        <small class="text-muted"
-                            style="font-size: 0.75rem;">{{ $entry->created_at->format('H:i') }}</small>
+                        <div>
+                            <small class="fw-bold brand-text">{{ $entry->created_at->format('M d, Y') }}</small>
+                            <small class="text-muted d-block"
+                                style="font-size: 0.75rem;">{{ $entry->created_at->format('H:i') }}</small>
+                        </div>
+                        <button wire:click="deleteEntry({{ $entry->id }})"
+                            wire:confirm="Are you sure you want to delete this reflection?"
+                            class="btn btn-link text-danger p-0 border-0" style="font-size: 0.8rem; text-decoration: none;">
+                            <i class="bi bi-trash3"></i>
+                        </button>
                     </div>
 
                     <div class="mb-3 position-relative">
                         <i class="bi bi-quote position-absolute top-0 start-0 text-muted opacity-25 display-6"
                             style="transform: translate(-5px, -10px);"></i>
-                        <p class="mb-0 text-dark small fst-italic ps-3 position-relative" style="z-index: 1;">
-                            "{{ Str::limit($entry->content, 80) }}"
+                        <p class="mb-0 brand-text small fst-italic ps-3 position-relative" style="z-index: 1;">
+                            "{{ $entry->content }}"
                         </p>
                     </div>
 
                     @if($entry->ai_response)
-                        <div class="bg-white rounded-3 p-3 shadow-sm border border-light">
+                        <div class="reframe-card rounded-3 p-3 shadow-sm border-0">
                             <div class="d-flex align-items-center mb-2">
-                                <div class="rounded-circle bg-soft-blue p-1 me-2 d-flex align-items-center justify-content-center"
+                                <div class="insight-icon-wrapper me-2 d-flex align-items-center justify-content-center"
                                     style="width: 24px; height: 24px;">
                                     <i class="bi bi-stars text-primary" style="font-size: 0.7rem;"></i>
                                 </div>
                                 <span class="text-primary fw-bold"
                                     style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Reframed</span>
                             </div>
-                            <p class="mb-0 small text-secondary" style="line-height: 1.5;">
-                                {{ Str::limit($entry->ai_response, 100) }}
+                            <p class="mb-0 small brand-text" style="line-height: 1.5;">
+                                {{ $entry->ai_response }}
                             </p>
                         </div>
                     @endif

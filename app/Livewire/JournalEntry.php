@@ -35,6 +35,7 @@ class JournalEntry extends Component
 
     public function submitEntry(AiService $aiService)
     {
+        $this->authorize('create', JournalModel::class);
         $this->validate();
         $this->isProcessing = true;
         $this->aiResponse = null; // Reset previous response
@@ -64,6 +65,17 @@ class JournalEntry extends Component
         $this->content = '';
         $this->isProcessing = false;
         $this->refreshEntries();
+    }
+
+    public function deleteEntry($id)
+    {
+        $entry = Auth::user()->journalEntries()->findOrFail($id);
+
+        $this->authorize('delete', $entry);
+
+        $entry->delete();
+        $this->refreshEntries();
+        session()->flash('message', 'Entry deleted.');
     }
 
     public function render()
