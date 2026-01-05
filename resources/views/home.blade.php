@@ -11,7 +11,7 @@
                     <img src="https://ui-avatars.com/api/?name={{ Auth::user()->anonymous_username }}&background=b2cbf2&color=fff&rounded=true" 
                          alt="Avatar" class="rounded-circle me-3 border border-2 border-white shadow-sm" style="width: 50px; height: 50px;">
                     <div>
-                        <h5 class="fw-bold text-dark mb-0">Good {{ now()->format('H') < 12 ? 'Morning' : (now()->format('H') < 18 ? 'Afternoon' : 'Evening') }},</h5>
+                        <h5 class="fw-bold text-dark mb-0" id="greeting-text">Good {{ now()->format('H') < 12 ? 'Morning' : (now()->format('H') < 18 ? 'Afternoon' : 'Evening') }},</h5>
                         <small class="text-muted">{{ Auth::user()->anonymous_username }}</small>
                     </div>
                 </div>
@@ -182,6 +182,16 @@
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
+                    // Update greeting based on local time
+                    const greetingText = document.getElementById('greeting-text');
+                    if (greetingText) {
+                        const hour = new Date().getHours();
+                        let greeting = 'Good Evening';
+                        if (hour < 12) greeting = 'Good Morning';
+                        else if (hour < 18) greeting = 'Good Afternoon';
+                        greetingText.textContent = greeting + ',';
+                    }
+
                     const ctx = document.getElementById('moodChart').getContext('2d');
                     
                     const moodData = @json($moodLogs);

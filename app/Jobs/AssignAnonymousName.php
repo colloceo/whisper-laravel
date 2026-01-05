@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\User;
+use App\Services\AiService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Str;
@@ -24,15 +25,11 @@ class AssignAnonymousName implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(AiService $aiService): void
     {
-        // Simulation of Gemini AI Call
-        $adjectives = ['Calm', 'Serene', 'Gentle', 'Quiet', 'Peaceful', 'Happy', 'Brave'];
-        $nouns = ['River', 'Mountain', 'Sky', 'Breeze', 'Ocean', 'Tree', 'Star'];
+        $randomName = $aiService->generateUsername();
 
-        $randomName = $adjectives[array_rand($adjectives)] . $nouns[array_rand($nouns)] . rand(10, 99);
-
-        $this->user->update([
+        $this->user->updateQuietly([
             'anonymous_username' => $randomName
         ]);
     }

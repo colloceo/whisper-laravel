@@ -13,15 +13,17 @@ class UserObserver
      */
     public function created(User $user): void
     {
-        // Inline generation to ensure immediate availability
-        $adjectives = ['Calm', 'Serene', 'Gentle', 'Quiet', 'Peaceful', 'Happy', 'Brave', 'Kind', 'Wise', 'Warm'];
-        $nouns = ['River', 'Mountain', 'Sky', 'Breeze', 'Ocean', 'Tree', 'Star', 'Moon', 'Sun', 'Cloud'];
-
+        // 1. Set a quick local fallback name first
+        $adjectives = ['Calm', 'Serene', 'Gentle', 'Quiet', 'Peaceful', 'Happy', 'Brave'];
+        $nouns = ['River', 'Mountain', 'Sky', 'Breeze', 'Ocean', 'Tree', 'Star'];
         $randomName = $adjectives[array_rand($adjectives)] . $nouns[array_rand($nouns)] . rand(10, 99);
 
         $user->updateQuietly([
             'anonymous_username' => $randomName
         ]);
+
+        // 2. Dispatch job to get a better AI-generated name
+        AssignAnonymousName::dispatch($user);
     }
 
     /**
