@@ -149,6 +149,7 @@
     </div>
     @livewireScripts
     @stack('scripts')
+    @stack('modals')
 </body>
 
 </html>

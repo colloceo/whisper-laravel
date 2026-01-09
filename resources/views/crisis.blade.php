@@ -144,8 +144,8 @@
                     <!-- Guided Breathing -->
                     <div class="col-12">
                         <div class="glass-card border-0 p-3 d-flex align-items-center justify-content-between transition-hover"
-                            style="border-radius: 1.25rem; cursor: pointer;" 
-                            data-bs-toggle="modal" data-bs-target="#breathingModal">
+                            style="border-radius: 1.25rem; cursor: pointer;" data-bs-toggle="modal"
+                            data-bs-target="#breathingModal">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3 text-info">
                                     <i class="bi bi-wind fs-4"></i>
@@ -162,8 +162,8 @@
                     <!-- Grounding -->
                     <div class="col-12">
                         <div class="glass-card border-0 p-3 d-flex align-items-center justify-content-between transition-hover"
-                            style="border-radius: 1.25rem; cursor: pointer;" 
-                            data-bs-toggle="modal" data-bs-target="#groundingModal">
+                            style="border-radius: 1.25rem; cursor: pointer;" data-bs-toggle="modal"
+                            data-bs-target="#groundingModal">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3 text-success">
                                     <i class="bi bi-sign-stop fs-4"></i> <!-- Anchor substitute -->
@@ -219,48 +219,50 @@
         </div>
     </div>
 
-    <!-- Breathing Modal (Unchanged Layout Logic) -->
-    <div class="modal fade" id="breathingModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg text-center p-4" style="border-radius: 2rem;">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold">Guided Breathing</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="py-4">
-                    <div id="breathingCircle"
-                        class="rounded-circle d-flex align-items-center justify-content-center mx-auto text-white fw-bold shadow-sm"
-                        style="width: 150px; height: 150px; background-color: #A8DADC; transition: all 4s ease-in-out;">
-                        <span id="breathingText" class="fs-4">Ready?</span>
+    @push('modals')
+        <!-- Breathing Modal (Unchanged Layout Logic) -->
+        <div class="modal fade" id="breathingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg text-center p-4" style="border-radius: 2rem;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold">Guided Breathing</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <p class="text-muted mt-4 small">4-7-8 Technique</p>
-                    <button id="startBreathingBtn" class="btn btn-primary btn-pill px-4 mt-2">Start</button>
+                    <div class="py-4">
+                        <div id="breathingCircle"
+                            class="rounded-circle d-flex align-items-center justify-content-center mx-auto text-white fw-bold shadow-sm"
+                            style="width: 150px; height: 150px; background-color: #A8DADC; transition: all 4s ease-in-out;">
+                            <span id="breathingText" class="fs-4">Ready?</span>
+                        </div>
+                        <p class="text-muted mt-4 small">4-7-8 Technique</p>
+                        <button id="startBreathingBtn" class="btn btn-primary btn-pill px-4 mt-2">Start</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Grounding Modal (Unchanged Layout Logic) -->
-    <div class="modal fade" id="groundingModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg text-center p-4" style="border-radius: 2rem;">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold">5-4-3-2-1 Grounding</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="py-4">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto text-white fw-bold shadow-sm mb-4"
-                        style="width: 80px; height: 80px; background-color: #FFCDB2; font-size: 2rem;">
-                        <span id="groundingStepNum" class="text-dark">5</span>
+        <!-- Grounding Modal (Unchanged Layout Logic) -->
+        <div class="modal fade" id="groundingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg text-center p-4" style="border-radius: 2rem;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold">5-4-3-2-1 Grounding</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <h6 id="groundingTitle" class="fw-bold text-dark">Name 5 things you can see</h6>
-                    <p id="groundingDesc" class="text-muted small mb-4">Look around you.</p>
-                    <button id="nextGroundingBtn" class="btn btn-dark btn-pill px-5"
-                        style="background-color: #FFCDB2; border:none; color: #7c2d12;">Next</button>
+                    <div class="py-4">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto text-white fw-bold shadow-sm mb-4"
+                            style="width: 80px; height: 80px; background-color: #FFCDB2; font-size: 2rem;">
+                            <span id="groundingStepNum" class="text-dark">5</span>
+                        </div>
+                        <h6 id="groundingTitle" class="fw-bold text-dark">Name 5 things you can see</h6>
+                        <p id="groundingDesc" class="text-muted small mb-4">Look around you.</p>
+                        <button id="nextGroundingBtn" class="btn btn-dark btn-pill px-5"
+                            style="background-color: #FFCDB2; border:none; color: #7c2d12;">Next</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endpush
 
     <script>
         document.addEventListener('DOMContentLoaded', initCrisisLogic);
@@ -278,7 +280,8 @@
 
             startBtn.onclick = () => {
                 startBtn.style.display = 'none';
-                runBreathingCycle(); 
+                if (breathingInterval) clearInterval(breathingInterval);
+                runBreathingCycle();
                 breathingInterval = setInterval(runBreathingCycle, 19000);
             };
 
