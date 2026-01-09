@@ -28,16 +28,6 @@
 
 <body class="{{ str_replace('.', '-', Route::currentRouteName() ?? '') }}">
     <div id="app">
-        <script>
-            // Apply theme immediately to prevent flash
-            (function () {
-                const savedTheme = localStorage.getItem('theme');
-                // Removed prefersDark check to default to Light theme unless explicitly set to Dark
-                if (savedTheme === 'dark') {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                }
-            })();
-        </script>
         @auth
             <!-- Desktop Sidebar -->
             <div class="sidebar d-none d-md-flex">
@@ -107,7 +97,12 @@
         @endauth
 
         <div class="main-wrapper">
-            @if(!request()->routeIs('chat.room'))
+            @php
+                $hideHeaderRoutes = ['chat.room', 'login', 'register', 'onboarding.guidelines', 'password.request', 'password.reset'];
+                $showHeader = !request()->routeIs($hideHeaderRoutes);
+            @endphp
+
+            @if($showHeader)
                 <header class="global-header-wrapper shadow-sm">
                     <div class="global-header">
                         <div class="d-flex align-items-center justify-content-between w-100">
@@ -133,11 +128,6 @@
                                 @auth
                                     <livewire:notifications-dropdown />
                                 @endauth
-
-                                <button class="btn btn-link text-dark p-1 border-0 shadow-none" id="theme-toggle"
-                                    onclick="let theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('theme', theme); if(window.renderMoodChart) window.renderMoodChart();">
-                                    <i class="bi bi-moon fs-5"></i>
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -145,8 +135,15 @@
             @endif
 
             <!-- Main Scrollable Content -->
-            <main class="content-scroll-area">
+            <main class="content-scroll-area {{ $showHeader ? 'has-header' : '' }}">
                 @yield('content')
+                {{ $slot ?? '' }}
+                <!-- Mobile Spacer to prevent overlap with bottom nav -->
+                @auth
+                    @if(!request()->routeIs('chat.room'))
+                        <div class="d-block d-md-none" style="height: 100px; flex-shrink: 0;"></div>
+                    @endif
+                @endauth
             </main>
         </div>
     </div>

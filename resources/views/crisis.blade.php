@@ -50,29 +50,6 @@
                 box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
             }
         }
-
-        /* Dark Mode Overrides for Modals */
-        [data-theme="dark"] .modal-content {
-            background-color: #1e293b !important;
-            color: #f8fafc !important;
-        }
-
-        [data-theme="dark"] .modal-header .btn-close {
-            filter: invert(1) grayscale(100%) brightness(200%);
-        }
-
-        [data-theme="dark"] .text-muted {
-            color: #94a3b8 !important;
-        }
-
-        [data-theme="dark"] .text-dark {
-            color: #f1f5f9 !important;
-        }
-
-        [data-theme="dark"] #groundingStepNum.text-dark {
-            color: #1e293b !important;
-            /* Keep step number dark on light circle */
-        }
     </style>
 
     <div class="container py-4">
@@ -167,7 +144,8 @@
                     <!-- Guided Breathing -->
                     <div class="col-12">
                         <div class="glass-card border-0 p-3 d-flex align-items-center justify-content-between transition-hover"
-                            style="border-radius: 1.25rem; cursor: pointer;" onclick="openBreathingModal()">
+                            style="border-radius: 1.25rem; cursor: pointer;" 
+                            data-bs-toggle="modal" data-bs-target="#breathingModal">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3 text-info">
                                     <i class="bi bi-wind fs-4"></i>
@@ -184,7 +162,8 @@
                     <!-- Grounding -->
                     <div class="col-12">
                         <div class="glass-card border-0 p-3 d-flex align-items-center justify-content-between transition-hover"
-                            style="border-radius: 1.25rem; cursor: pointer;" onclick="openGroundingModal()">
+                            style="border-radius: 1.25rem; cursor: pointer;" 
+                            data-bs-toggle="modal" data-bs-target="#groundingModal">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3 text-success">
                                     <i class="bi bi-sign-stop fs-4"></i> <!-- Anchor substitute -->
@@ -284,58 +263,44 @@
     </div>
 
     <script>
-        // Wait for Bootstrap to be loaded
-        function waitForBootstrap(callback) {
-            if (window.bootstrap) {
-                callback();
-            } else {
-                setTimeout(() => waitForBootstrap(callback), 100);
-            }
-        }
+        document.addEventListener('DOMContentLoaded', initCrisisLogic);
+        document.addEventListener('livewire:navigated', initCrisisLogic);
 
-        waitForBootstrap(() => {
+        function initCrisisLogic() {
             // --- Guided Breathing Logic ---
             const breathingModalEl = document.getElementById('breathingModal');
-            const breathingModal = new bootstrap.Modal(breathingModalEl);
+            if (!breathingModalEl) return;
+
             const circle = document.getElementById('breathingCircle');
             const text = document.getElementById('breathingText');
             const startBtn = document.getElementById('startBreathingBtn');
             let breathingInterval;
 
-            window.openBreathingModal = function () {
-                breathingModal.show();
-            }
-
-            startBtn.addEventListener('click', () => {
+            startBtn.onclick = () => {
                 startBtn.style.display = 'none';
-                runBreathingCycle(); // Start immediately
-                // Cycle total: 4s (Inhale) + 7s (Hold) + 8s (Exhale) = 19s
+                runBreathingCycle(); 
                 breathingInterval = setInterval(runBreathingCycle, 19000);
-            });
+            };
 
             function runBreathingCycle() {
-                // Inhale (4s)
+                if (!circle || !text) return;
                 text.innerText = 'Inhale';
                 circle.style.transition = 'all 4s ease-in-out';
                 circle.style.transform = 'scale(1.5)';
-                circle.style.backgroundColor = '#457b9d'; // Darker blue
+                circle.style.backgroundColor = '#457b9d';
 
                 setTimeout(() => {
-                    // Hold (7s)
                     text.innerText = 'Hold';
                     circle.style.transition = 'all 0.5s ease-in-out';
-                    // Subtle pulse or static
                     circle.style.transform = 'scale(1.55)';
 
                     setTimeout(() => {
-                        // Exhale (8s)
                         text.innerText = 'Exhale';
                         circle.style.transition = 'all 8s ease-out';
                         circle.style.transform = 'scale(1)';
-                        circle.style.backgroundColor = '#A8DADC'; // Back to original
-
-                    }, 7000); // Wait 7s for Hold
-                }, 4000); // Wait 4s for Inhale
+                        circle.style.backgroundColor = '#A8DADC';
+                    }, 7000);
+                }, 4000);
             }
 
             breathingModalEl.addEventListener('hidden.bs.modal', () => {
@@ -346,10 +311,10 @@
                 circle.style.backgroundColor = '#A8DADC';
             });
 
-
             // --- Grounding Logic ---
             const groundingModalEl = document.getElementById('groundingModal');
-            const groundingModal = new bootstrap.Modal(groundingModalEl);
+            if (!groundingModalEl) return;
+
             const stepNum = document.getElementById('groundingStepNum');
             const title = document.getElementById('groundingTitle');
             const desc = document.getElementById('groundingDesc');
@@ -364,24 +329,19 @@
             ];
             let currentStep = 0;
 
-            window.openGroundingModal = function () {
-                groundingModal.show();
+            groundingModalEl.addEventListener('show.bs.modal', () => {
                 currentStep = 0;
                 updateGroundingUI();
-            }
+            });
 
             function updateGroundingUI() {
-                // Simple fade effect
-                const contentContainer = stepNum.parentElement.parentElement; // The .py-4 container roughly
+                const contentContainer = stepNum.parentElement.parentElement;
                 contentContainer.style.opacity = '0';
                 contentContainer.style.transition = 'opacity 0.3s ease';
 
                 setTimeout(() => {
                     if (currentStep < steps.length) {
                         stepNum.innerText = steps[currentStep].num;
-                        stepNum.style.backgroundColor = '#FFCDB2';
-                        stepNum.innerHTML = steps[currentStep].num;
-
                         title.innerText = steps[currentStep].title;
                         desc.innerText = steps[currentStep].desc;
                         nextBtn.innerText = 'Next';
@@ -390,17 +350,19 @@
                             updateGroundingUI();
                         };
                     } else {
-                        // Done state
                         stepNum.innerHTML = '<i class="bi bi-check-lg"></i>';
-                        stepNum.style.backgroundColor = '#b7e4c7'; // Soft green
+                        stepNum.style.backgroundColor = '#b7e4c7';
                         title.innerText = 'Great job!';
                         desc.innerText = 'Take a moment to feel the difference.';
                         nextBtn.innerText = 'Close';
-                        nextBtn.onclick = () => groundingModal.hide();
+                        nextBtn.onclick = () => {
+                            const modal = bootstrap.Modal.getInstance(groundingModalEl);
+                            if (modal) modal.hide();
+                        };
                     }
                     contentContainer.style.opacity = '1';
                 }, 300);
             }
-        });
+        }
     </script>
 @endsection

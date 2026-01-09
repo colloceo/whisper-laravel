@@ -196,9 +196,8 @@
                         window.moodChartInstance.destroy();
                     }
 
-                    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-                    const textColor = isDark ? '#94a3b8' : '#64748b';
-                    const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+                    const textColor = '#64748b';
+                    const gridColor = 'rgba(0, 0, 0, 0.05)';
                     
                     const moodData = @json($moodLogs);
                     const labels = moodData.map(log => {
@@ -276,10 +275,10 @@
                                 legend: { display: false },
                                 tooltip: {
                                     enabled: hasData,
-                                    backgroundColor: isDark ? '#1e293b' : 'rgba(255, 255, 255, 0.9)',
-                                    titleColor: isDark ? '#f1f5f9' : '#1d3557',
-                                    bodyColor: isDark ? '#f1f5f9' : '#1d3557',
-                                    borderColor: isDark ? 'rgba(255,255,255,0.1)' : '#e5e7eb',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                    titleColor: '#1d3557',
+                                    bodyColor: '#1d3557',
+                                    borderColor: '#e5e7eb',
                                     borderWidth: 1,
                                     padding: 10,
                                     displayColors: false,

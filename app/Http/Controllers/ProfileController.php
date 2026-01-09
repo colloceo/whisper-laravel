@@ -40,6 +40,35 @@ class ProfileController extends Controller
     }
 
     /**
+     * Update the user's profile.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'anonymous_username' => 'required|string|max:255|unique:users,anonymous_username,' . $user->id,
+            'name' => 'nullable|string|max:255',
+            'daily_reminders' => 'nullable|boolean',
+            'crisis_alerts' => 'nullable|boolean',
+            'anonymous_mode' => 'nullable|boolean',
+        ]);
+
+        // Handle checkboxes (if not present in request, set to false)
+        $data = $validated;
+        $data['daily_reminders'] = $request->has('daily_reminders');
+        $data['crisis_alerts'] = $request->has('crisis_alerts');
+        $data['anonymous_mode'] = $request->has('anonymous_mode');
+
+        $user->update($data);
+
+        return redirect()->back()->with('status', 'Profile updated successfully!');
+    }
+
+    /**
      * Delete the user's account.
      *
      * @param  \Illuminate\Http\Request  $request

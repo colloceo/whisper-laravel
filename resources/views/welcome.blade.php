@@ -319,7 +319,10 @@
                         style="color: #64748b; font-weight: 600; text-decoration: none; margin-left: 5px;">Log In</a>
                 </div>
 
-                <p class="footer-note">By continuing, you agree to our Terms.</p>
+                <p class="footer-note">By continuing, you agree to our <a href="{{ route('terms') }}"
+                        class="text-decoration-none text-muted fw-semibold">Terms</a> and <a
+                        href="{{ route('privacy') }}" class="text-decoration-none text-muted fw-semibold">Privacy
+                        Policy</a>.</p>
             </div>
         </div>
 

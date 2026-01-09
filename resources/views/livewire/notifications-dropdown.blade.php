@@ -1,11 +1,12 @@
-<div class="dropdown">
+<div class="dropdown" wire:poll.5s>
     <button class="btn btn-link text-dark p-1 border-0 shadow-none position-relative" type="button"
         data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-bell fs-5"></i>
+        <i class="bi bi-bell-fill fs-5 text-muted"></i>
         @if($unreadCount > 0)
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                style="font-size: 0.6rem; padding: 0.25em 0.4em;">
-                {{ $unreadCount }}
+            <span
+                class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
+                style="width: 10px; height: 10px; margin-top: 5px; margin-left: -5px;">
+                <span class="visually-hidden">New alerts</span>
             </span>
         @endif
     </button>
@@ -50,7 +51,8 @@
         </div>
         @if($notifications->count() > 0)
             <div class="p-2 text-center border-top">
-                <a href="#" class="text-primary small text-decoration-none fw-bold" style="font-size: 0.75rem;">View all
+                <a href="{{ route('notifications') }}" class="text-primary small text-decoration-none fw-bold"
+                    style="font-size: 0.75rem;">View all
                     alerts</a>
             </div>
         @endif

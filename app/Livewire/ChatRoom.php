@@ -7,8 +7,11 @@ use App\Models\ChatRoom as ChatRoomModel;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
 
+use Livewire\Attributes\Layout;
+
 class ChatRoom extends Component
 {
+    #[Layout('layouts.app')]
     public $activeRoom; // Changed from $room to handle the findOrFail
     public $newMessage;
     public $roomId;
@@ -28,12 +31,17 @@ class ChatRoom extends Component
     {
         $this->validate(['newMessage' => 'required|string|max:1000']);
 
-        Message::create([
+        $message = Message::create([
             'chat_room_id' => $this->roomId,
             'user_id' => Auth::id(),
             'content' => $this->newMessage,
             'parent_id' => $this->replyingTo ? $this->replyingTo->id : null,
         ]);
+
+        // Notify parent message author if it's a reply
+        if ($this->replyingTo && $this->replyingTo->user_id !== Auth::id()) {
+            $this->replyingTo->user->notify(new \App\Notifications\NewReplyNotification($message));
+        }
 
         $this->reset(['newMessage', 'replyingTo']);
         $this->dispatch('scroll-to-bottom');
@@ -81,12 +89,20 @@ class ChatRoom extends Component
 
     public function getMessagesProperty()
     {
+        // Update current user's last seen
+        Auth::user()->update(['last_seen_at' => now()]);
+
         return $this->activeRoom->messages()
             ->with(['user', 'parent.user'])
             ->latest()
             ->take(50)
             ->get()
             ->reverse();
+    }
+
+    public function getOnlineCountProperty()
+    {
+        return \App\Models\User::where('last_seen_at', '>=', now()->subMinutes(5))->count();
     }
 
     // Kept to maintain the sidebar functionality if needed, though user didn't explicitly ask for it in this specific prompt
@@ -99,6 +115,6 @@ class ChatRoom extends Component
         return view('livewire.chat-room', [
             'messages' => $this->messages,
             'room' => $this->activeRoom
-        ])->extends('layouts.app')->section('content');
+        ]);
     }
 }

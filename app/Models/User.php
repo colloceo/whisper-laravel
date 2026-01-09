@@ -24,6 +24,10 @@ class User extends Authenticatable
      * @property bool $is_admin
      * @property \Illuminate\Support\Carbon|null $guidelines_accepted_at
      * @property \Illuminate\Support\Carbon|null $last_login_at
+     * @property \Illuminate\Support\Carbon|null $last_seen_at
+     * @property bool $daily_reminders
+     * @property bool $crisis_alerts
+     * @property bool $anonymous_mode
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
      */
@@ -41,6 +45,10 @@ class User extends Authenticatable
         'is_admin',
         'guidelines_accepted_at',
         'last_login_at',
+        'last_seen_at',
+        'daily_reminders',
+        'crisis_alerts',
+        'anonymous_mode',
         'google_id',
     ];
 
@@ -64,6 +72,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'daily_reminders' => 'boolean',
+            'crisis_alerts' => 'boolean',
+            'anonymous_mode' => 'boolean',
         ];
     }
 

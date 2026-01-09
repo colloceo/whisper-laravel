@@ -20,7 +20,9 @@
                     <div class="d-flex align-items-center">
                         <span class="badge bg-success rounded-pill me-1"
                             style="width: 8px; height: 8px; padding: 0;"></span>
-                        <small class="text-muted fw-bold" style="font-size: 0.75rem;">Live</small>
+                        <small class="text-muted fw-bold" style="font-size: 0.75rem;">
+                            Live • {{ $this->onlineCount }} online
+                        </small>
                     </div>
                 </div>
             </div>
@@ -51,10 +53,10 @@
                         <!-- Message Bubble -->
                         <div class="p-3 shadow-sm text-break position-relative {{ $message->user_id !== auth()->id() ? 'chat-received' : '' }}"
                             style="max-width: 75vw; width: fit-content;
-                                                            border-radius: {{ $message->user_id === auth()->id() ? '15px 15px 0 15px' : '15px 15px 15px 0' }};
-                                                            background: {{ $message->user_id === auth()->id() ? 'var(--whisper-blue, #3b82f6)' : '' }};
-                                                            color: {{ $message->user_id === auth()->id() ? '#fff' : '' }};
-                                                            backdrop-filter: blur(5px);">
+                                                                border-radius: {{ $message->user_id === auth()->id() ? '15px 15px 0 15px' : '15px 15px 15px 0' }};
+                                                                background: {{ $message->user_id === auth()->id() ? 'var(--whisper-blue, #3b82f6)' : '' }};
+                                                                color: {{ $message->user_id === auth()->id() ? '#fff' : '' }};
+                                                                backdrop-filter: blur(5px);">
                             {{ $message->content }}
                         </div>
 
@@ -150,19 +152,35 @@
         function scrollToBottom() {
             const stream = document.getElementById('chatStream');
             if (stream) {
-                stream.scrollTop = stream.scrollHeight;
+                stream.scrollTo({
+                    top: stream.scrollHeight,
+                    behavior: 'smooth'
+                });
             }
         }
 
-        document.addEventListener('livewire:initialized', () => {
-            scrollToBottom();
+        function isAtBottom() {
+            const stream = document.getElementById('chatStream');
+            if (!stream) return false;
+            const threshold = 150; // pixels from bottom to be considered "at bottom"
+            return (stream.scrollHeight - stream.scrollTop - stream.clientHeight) < threshold;
+        }
 
+        document.addEventListener('livewire:initialized', () => {
+            // Initial scroll
+            setTimeout(scrollToBottom, 100);
+
+            // Manual trigger when user sends a message
             Livewire.on('scroll-to-bottom', () => {
                 setTimeout(scrollToBottom, 50);
             });
 
-            Livewire.hook('morph.updated', () => {
-                scrollToBottom();
+            // Intelligent scroll on background updates
+            Livewire.hook('morph.updated', ({ component, el }) => {
+                if (el.id === 'chatStream' && isAtBottom()) {
+                    // Only scroll if we were already at the bottom
+                    setTimeout(scrollToBottom, 50);
+                }
             });
         });
     </script>
